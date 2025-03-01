@@ -1,4 +1,4 @@
-Fabric Inventory Management System
+# Fabric Inventory Management System
 
 ## Team Members
 
