@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Registration</title>
+  <style>
+    body { font-family: Arial; background: #f0f0f0; }
+    .container { width: 400px; margin: 50px auto; background: white; padding: 20px; border-radius: 8px; }
+    input, button { width: 100%; padding: 10px; margin: 5px 0; }
+    p { font-size: 14px; margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Registration Form</h2>
+    <form id="regForm">
+      <input type="text" id="uname" placeholder="Username" required />
+      <p id="p1"></p>
+
+      <input type="password" id="pswd" placeholder="Password" required />
+      <p id="p2"></p>
+
+      <input type="password" id="cpswd" placeholder="Confirm Password" required />
+      <p id="p3"></p>
+
+      <input type="email" id="eml" placeholder="Email" required />
+      <p id="p4"></p>
+
+      <input type="text" id="contact" placeholder="Phone (10 digits)" required />
+      <p id="p5"></p>
+
+      <button type="submit">Register</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById("regForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      let valid = true;
+      const username = document.getElementById("uname").value.trim();
+      const password = document.getElementById("pswd").value;
+      const confirmPassword = document.getElementById("cpswd").value;
+      const email = document.getElementById("eml").value.trim();
+      const contact = document.getElementById("contact").value.trim();
+
+      // Username validation
+      if (!username || /^\d/.test(username)) {
+        p1.innerText = "Username must not start with a number.";
+        p1.style.color = "red";
+        valid = false;
+      } else {
+        p1.innerText = "Valid";
+        p1.style.color = "green";
+      }
+
+      // Password validation
+      if (password.length < 10) {
+        p2.innerText = "Password must be at least 10 characters.";
+        p2.style.color = "red";
+        valid = false;
+      } else {
+        p2.innerText = "Valid";
+        p2.style.color = "green";
+      }
+
+      // Confirm password
+      if (password !== confirmPassword) {
+        p3.innerText = "Passwords do not match.";
+        p3.style.color = "red";
+        valid = false;
+      } else {
+        p3.innerText = "Valid";
+        p3.style.color = "green";
+      }
+
+      // Email
+      const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+      if (!emailPattern.test(email)) {
+        p4.innerText = "Invalid email format.";
+        p4.style.color = "red";
+        valid = false;
+      } else {
+        p4.innerText = "Valid";
+        p4.style.color = "green";
+      }
+
+      // Phone number
+      if (!/^\d{10}$/.test(contact)) {
+        p5.innerText = "Phone number must be 10 digits.";
+        p5.style.color = "red";
+        valid = false;
+      } else {
+        p5.innerText = "Valid";
+        p5.style.color = "green";
+      }
+
+      // Save data and redirect
+      if (valid) {
+        localStorage.setItem("username", username);
+        localStorage.setItem("password", password);
+        alert("Registration Successful!");
+        window.location.href = "login.html";
+      }
+    });
+  </script>
+</body>
+</html>
