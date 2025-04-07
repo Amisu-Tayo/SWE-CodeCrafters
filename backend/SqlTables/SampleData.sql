@@ -9,9 +9,9 @@ INSERT INTO role_access (role_name, permissions) VALUES
 
 -- Insert users
 INSERT INTO users (username, password_hash, role) VALUES
-('admin_user', 'hashedpass1', 'Admin'),
-('manager1', 'hashedpass2', 'Inventory Manager'),
-('staff1', 'hashedpass3', 'Staff Member');
+('admin_user', 'hashedpass1', 'Admin', 'user1@example.com'),
+('manager1', 'hashedpass2', 'Inventory Manager', 'user2@example.com'),
+('staff1', 'hashedpass3', 'Staff Member', 'user3@example.com');
 
 -- Insert suppliers
 INSERT INTO suppliers (supplier_name, contact_info, address, rating) VALUES

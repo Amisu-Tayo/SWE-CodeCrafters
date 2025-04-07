@@ -1,4 +1,5 @@
 import os
+from werkzeug.security import generate_password_hash
 from flask import Flask, request, jsonify, session, url_for, redirect
 from db_config import get_connection
 from flask_cors import CORS  # Import CORS
@@ -7,6 +8,37 @@ app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY')
 CORS(app)  # Enable CORS for the entire app
 
+@app.route("/create_account", methods=["POST"])
+def create_account():
+    data = request.json
+    username = data.get("username")
+    password = data.get("password")
+    email = data.get("email")
+
+    # Validate username and password before proceeding
+    if not username or not password or not email:
+        return jsonify({"success": False, "message": "All fields are required."}), 400
+
+    # Hash the password
+    password_hash = generate_password_hash(password)
+
+    # Connect to the database
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    # Insert the user data into the database
+    try:
+        cursor.execute("INSERT INTO users (username, password_hash, role, email) VALUES (%s, %s, %s, %s)",
+                       (username, password_hash, "Staff Member", email))  # Default role can be 'Staff Member'
+        conn.commit()  # Commit the transaction
+        conn.close()
+        return jsonify({"success": True, "message": "Account created successfully!"}), 201
+    except Exception as e:
+        conn.close()
+        return jsonify({"success": False, "message": str(e)}), 500
+
+if __name__ == "__main__":
+    app.run(debug=True)
 
 def login_required(f):
     @wraps(f)

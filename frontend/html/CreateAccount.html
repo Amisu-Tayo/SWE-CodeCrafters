@@ -2,17 +2,12 @@
 <html>
 <head>
   <title>Create Account</title>
-  <style>
-    body { font-family: Arial; background: #f0f0f0; }
-    .container { width: 400px; margin: 50px auto; background: white; padding: 20px; border-radius: 8px; }
-    input, button { width: 100%; padding: 10px; margin: 5px 0; }
-    p { font-size: 14px; margin: 0; }
-  </style>
+  <link rel="stylesheet" href="/frontend/css/login.css">
 </head>
 <body>
-  <div class="container">
-    <h2>Registration Form</h2>
-    <form id="regForm">
+  <div class="login-container">
+      <h1>Create Your Account</h1>
+      <form id="regForm">
       <input type="text" id="uname" placeholder="Username" required />
       <p id="p1"></p>
 
@@ -25,10 +20,9 @@
       <input type="email" id="eml" placeholder="Email" required />
       <p id="p4"></p>
 
-      <input type="text" id="contact" placeholder="Phone (10 digits)" required />
-      <p id="p5"></p>
+      
 
-      <button type="submit">Register</button>
+      <button type="submit">Create Account</button>
     </form>
   </div>
 
@@ -41,7 +35,7 @@
       const password = document.getElementById("pswd").value;
       const confirmPassword = document.getElementById("cpswd").value;
       const email = document.getElementById("eml").value.trim();
-      const contact = document.getElementById("contact").value.trim();
+      
 
       // Username validation
       if (!username || /^\d/.test(username)) {
@@ -69,8 +63,8 @@
         p3.style.color = "red";
         valid = false;
       } else {
-        p3.innerText = "Valid";
-        p3.style.color = "green";
+        document.getElementById("p3").innerText = "Valid";
+        document.getElementById("p3").style.color = "green";
       }
 
       // Email
@@ -84,22 +78,37 @@
         p4.style.color = "green";
       }
 
-      // Phone number
-      if (!/^\d{10}$/.test(contact)) {
-        p5.innerText = "Phone number must be 10 digits.";
-        p5.style.color = "red";
-        valid = false;
-      } else {
-        p5.innerText = "Valid";
-        p5.style.color = "green";
-      }
+      
 
       // Save data and redirect
       if (valid) {
-        localStorage.setItem("username", username);
-        localStorage.setItem("password", password);
-        alert("Registration Successful!");
-        window.location.href = "login.html";
+        const userData = {
+          username: username,
+          password: password,
+          email: email
+        };
+         // Send a POST request to the Flask backend to create the user
+         fetch("http://127.0.0.1:5000/create_account", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(userData)
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert("Account created successfully!");
+            window.location.href = "login.html";  // Redirect to login page after successful account creation
+          } else {
+            alert("Error: " + data.message);  // Display any error messages from backend
+          }
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          alert("An error occurred. Please try again later.");
+        });
+    
       }
     });
   </script>
