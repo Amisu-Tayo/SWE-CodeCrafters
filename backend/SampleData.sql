@@ -40,3 +40,7 @@ INSERT INTO orders (supplier_id, fabric_id, quantity) VALUES
 -- Insert sales report
 INSERT INTO sales_reports (generated_by, report_data) VALUES
 (1, '{"sales": [{"fabric": "Cotton", "qty": 12}]}');
+
+SELECT * FROM users;
+SELECT * FROM fabric_inventory;
+
