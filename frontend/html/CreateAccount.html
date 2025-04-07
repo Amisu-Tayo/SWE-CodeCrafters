@@ -20,10 +20,11 @@
       <input type="email" id="eml" placeholder="Email" required />
       <p id="p4"></p>
 
-      
-
       <button type="submit">Create Account</button>
     </form>
+    <div class="links">
+      <a href="login.html" class="link">Login</a>
+  </div>
   </div>
 
   <script>
@@ -39,43 +40,61 @@
 
       // Username validation
       if (!username || /^\d/.test(username)) {
-        p1.innerText = "Username must not start with a number.";
-        p1.style.color = "red";
+        document.getElementById("p1").innerText = "Username must not start with a number.";
+        document.getElementById("p1").style.color = "red";
         valid = false;
       } else {
-        p1.innerText = "Valid";
-        p1.style.color = "green";
+        document.getElementById("p1").innerText = "Valid";
+        document.getElementById("p1").style.color = "green";
       }
 
       // Password validation
       if (password.length < 10) {
-        p2.innerText = "Password must be at least 10 characters.";
-        p2.style.color = "red";
+        document.getElementById("p2").innerText = "Password must be at least 10 characters.";
+        document.getElementById("p2").style.color = "red";
+        valid = false;
+      } else if (!/[a-z]/.test(password)) {
+        document.getElementById("p2").innerText = "Password must contain at least one lowercase letter.";
+        document.getElementById("p2").style.color = "red";
+        valid = false;
+      } else if (!/[A-Z]/.test(password)) {
+        document.getElementById("p2").innerText = "Password must contain at least one uppercase letter.";
+        document.getElementById("p2").style.color = "red";
+        valid = false;
+      } else if (!/[0-9]/.test(password)) {
+        document.getElementById("p2").innerText = "Password must contain at least one number.";
+        document.getElementById("p2").style.color = "red";
+        valid = false;
+      } else if (!/[@#$%^&+=]/.test(password)) {
+        document.getElementById("p2").innerText = "Password must contain at least one special character (@#$%^&+=).";
+        document.getElementById("p2").style.color = "red";
         valid = false;
       } else {
-        p2.innerText = "Valid";
-        p2.style.color = "green";
+        document.getElementById("p2").innerText = "Valid";
+        document.getElementById("p2").style.color = "green";
       }
+
 
       // Confirm password
       if (password !== confirmPassword) {
-        p3.innerText = "Passwords do not match.";
-        p3.style.color = "red";
+        document.getElementById("p3").innerText = "Passwords do not match.";
+        document.getElementById("p3").style.color = "red";
         valid = false;
       } else {
         document.getElementById("p3").innerText = "Valid";
         document.getElementById("p3").style.color = "green";
       }
 
-      // Email
+
+      // Email validation
       const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
       if (!emailPattern.test(email)) {
-        p4.innerText = "Invalid email format.";
-        p4.style.color = "red";
+        document.getElementById("p4").innerText = "Invalid email format.";
+        document.getElementById("p4").style.color = "red";
         valid = false;
       } else {
-        p4.innerText = "Valid";
-        p4.style.color = "green";
+        document.getElementById("p4").innerText = "Valid";
+        document.getElementById("p4").style.color = "green";
       }
 
       
@@ -88,7 +107,7 @@
           email: email
         };
          // Send a POST request to the Flask backend to create the user
-         fetch("http://127.0.0.1:5000/create_account", {
+         fetch("http://127.0.0.1:5000/CreateAccount", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
