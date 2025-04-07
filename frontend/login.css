@@ -1,0 +1,82 @@
+/* Global Background Color (Ensure whole page uses light gray) */
+html, body {
+    height: 100%;  /* Ensure full page is covered */
+    margin: 0;
+    padding: 0;
+    background-color: #b49a9a;  /* Light gray background */
+    font-family: 'Arial', sans-serif;
+}
+
+/* Login Page Styling */
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 20px;
+    background-color: rgba(240, 240, 240, 0.9);  /* Light gray background for container */
+    border-radius: 10px;
+    color: #333;  /* Dark text for contrast */
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);  /* Subtle shadow for depth */
+}
+
+.login-container h1 {
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    color: #009688;  /* Consistent color with homepage theme */
+}
+
+input {
+    width: 80%;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;  /* Light border for inputs */
+    font-size: 16px;
+    background-color: #fff;  /* White background for inputs */
+}
+
+button {
+    width: 85%;
+    padding: 12px;
+    border-radius: 25px;
+    font-weight: bold;
+    background-color: #009688;  /* Consistent button color */
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #00796b;
+}
+
+button:active {
+    transform: scale(0.95);  /* Slight shrink effect on click */
+}
+
+/* Link Styling */
+.links {
+    margin-top: 20px;
+}
+
+.link {
+    color: #009688;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 5px;
+    transition: color 0.3s ease;
+}
+
+.link:hover {
+    color: #00796b;  /* Darker shade for hover effect */
+}
+
+/* Responsive Design for Small Screens */
+@media (max-width: 768px) {
+    .login-container {
+        max-width: 90%;
+    }
+}

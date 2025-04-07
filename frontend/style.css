@@ -1,74 +1,86 @@
-
 *{
       margin: 0;
       padding: 0;
       font-family: sans-serif;
-}
-.banner{
+  }
+  
+  .banner{
       width: 100%;
       height: 100vh;
-      background-image: linear-gradient(rgba(0,0,0,0.75),rgba(0,0,0,0.75)),url(fabric.jpg);
+      background-image: linear-gradient(rgba(0,0,0,0.75),rgba(0,0,0,0.75)), url(fabric.jpg);
       background-size: cover;
       background-position: center;
-}
-.navbar{
+  }
+  
+  .navbar{
       width: 85%;
       margin: auto;
       padding: 35px 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
-}
-.r1{
-      width: 85%;
-      margin: auto;
-      padding: 35px 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-}
-.navbar ul li{
+      position: relative;
+  }
+  
+  .navbar ul li{
       list-style: none;
       display: inline-block;
       margin: 0 15px;
       position: relative;
-}
-.navbar ul li a{
+  }
+  
+  .navbar ul li a{
       text-decoration: none;
       color: #fff;
       text-transform: uppercase;
-}
-.navbar ul li::after{
+      font-weight: bold;
+      font-size: 18px;
+      position: relative;
+      padding-bottom: 5px;
+      transition: color 0.3s ease-in-out;
+  }
+  
+  .navbar ul li::after{
       content: '';
       height: 3px;
       width: 0%;
       background: #009688;
       position: absolute;
       left: 0;
-      bottom: -10;
-      transition: 0.5s;
-}
-.navbar ul li:hover::after{
+      bottom: -10px;
+      transition: width 0.5s ease-in-out;
+  }
+  
+  .navbar ul li:hover::after{
       width: 100%;
-}
-.content{
+  }
+  
+  .navbar ul li:hover a {
+      color: #009688;
+  }
+  
+  .content{
       width: 100%;
       position: absolute;
       top: 55%;
       transform: translateY(-50%);
       text-align: center;
       color: #fff;
-}
-.content h1{
+  }
+  
+  .content h1{
       font-size: 50px;
-      margin-top: 00px;
-}
-.content p{
+      margin-top: 0;
+      transition: color 0.3s ease;
+  }
+  
+  .content p{
       margin: 20px auto;
       font-weight: 100;
       line-height: 25px;
-}
-button{
+  }
+  
+  button{
       width: 200px;
       padding: 15px 0;
       text-align: center;
@@ -79,11 +91,13 @@ button{
       background: transparent;
       color: #fff;
       cursor: pointer;
-      position:relative;
-      overflow:hidden;
-}
-span{
-      background:#009688;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease-in-out;
+  }
+  
+  span{
+      background: #009688;
       height: 100%;
       width: 100%;
       border-radius: 25px;
@@ -92,14 +106,63 @@ span{
       bottom: 0%;
       z-index: -1;
       transition: 0.5s;
-}
-button:hover span{
-       width: 100%;
-}
-button:hover{
-       border: none;
-}
-label{
-	font-size: 20px;
-        color: #ffffff;
-}
+  }
+  
+  /* Hover effect for the button */
+  button:hover span{
+      width: 100%;
+  }
+  
+  button:hover{
+      border: none;
+      background-color: #009688;
+      color: white;
+  }
+  
+  button:active {
+      transform: scale(0.95); /* Slightly shrink the button on click for effect */
+  }
+  
+  /* Animation for login button */
+  button.login-button {
+      position: relative;
+      overflow: hidden;
+  }
+  
+  button.login-button:hover {
+      background-color: #e74c3c;
+      color: white;
+  }
+  
+  button.login-button span {
+      background-color: #e74c3c;
+      height: 100%;
+      width: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: -1;
+  }
+  
+  button.login-button:hover span {
+      width: 100%;
+  }
+  
+  /* Label Styling */
+  label{
+      font-size: 20px;
+      color: #ffffff;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+      .navbar li {
+          display: block;
+          margin: 10px 0;
+      }
+  
+      .content h1 {
+          font-size: 2.5em;
+      }
+  }
+  
