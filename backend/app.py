@@ -3,37 +3,72 @@ from functools import wraps
 import mysql.connector
 from dotenv import load_dotenv
 load_dotenv()
-from werkzeug.security import generate_password_hash
-from werkzeug.security import check_password_hash
-from flask import Flask, request, jsonify, session, url_for, redirect
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask import Flask, request, jsonify, session, url_for, redirect, send_from_directory
 from db_config import get_connection
-from flask_cors import CORS  # Import CORS
+from flask_cors import CORS
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY')
 CORS(app)  # Enable CORS for the entire app
 
+# Define directories
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_ROOT = os.path.join(BASE_DIR, "..", "frontend")
+FRONTEND_HTML = os.path.join(FRONTEND_ROOT, "html")
+
 # Decorator to check if user is logged in
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not session.get('logged_in'):  # If user is not logged in, redirect to login
-            return redirect(url_for('login'))  # Redirect to the login page
+        if not session.get('logged_in'):
+            return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
 
-@app.route("/CreateAccount", methods=["POST"])
+# Route to serve static files from the frontend folder (CSS, images, etc.)
+@app.route("/frontend/<path:filename>")
+def serve_frontend_files(filename):
+    return send_from_directory(FRONTEND_ROOT, filename)
+
+# Serve the landing page from the frontend/html folder
+@app.route("/")
+def home():
+    return send_from_directory(FRONTEND_HTML, "index.html")
+
+# Login route: handle GET and POST
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        data = request.json
+        username = data.get("username")
+        password = data.get("password")
+
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+        user = cursor.fetchone()
+        conn.close()
+
+        if user and check_password_hash(user['password_hash'], password):
+            session['logged_in'] = True
+            return jsonify({"success": True, "message": "Login successful"})
+        else:
+            return jsonify({"success": False, "message": "Invalid credentials"}), 401
+    else:
+        # Serve login.html on GET requests
+        return send_from_directory(FRONTEND_HTML, "login.html")
+
+@app.route("/CreateAccount", methods=["GET", "POST"])
 def CreateAccount():
     data = request.json
     username = data.get("username")
     password = data.get("password")
     email = data.get("email")
 
-    # Validate username and password before proceeding
     if not username or not password or not email:
         return jsonify({"success": False, "message": "All fields are required."}), 400
 
-    # Check if the username already exists
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
@@ -42,15 +77,13 @@ def CreateAccount():
     if existing_user:
         conn.close()
         return jsonify({"success": False, "message": "Username already exists."}), 400
-    
-    # Check if the email already exists
+
     cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
     existing_email = cursor.fetchone()
     if existing_email:
         conn.close()
         return jsonify({"success": False, "message": "An account already exists with this email address. Please log in"}), 400
 
-    # Validate password strength
     if len(password) < 8:
         return jsonify({"success": False, "message": "Password must be at least 8 characters long."}), 400
     if not any(char.isdigit() for char in password):
@@ -66,41 +99,21 @@ def CreateAccount():
     if password in username:
         return jsonify({"success": False, "message": "Username cannot contain the password."}), 400
 
-    # Hash the password
     password_hash = generate_password_hash(password, method='scrypt')
 
-    # Connect to the database
     cursor.execute("INSERT INTO users (username, password_hash, role, email) VALUES (%s, %s, %s, %s)",
-                   (username, password_hash, "Staff Member", email))  # Default role can be 'Staff Member'
-    conn.commit()  # Commit the transaction
+                   (username, password_hash, "Staff Member", email))
+    conn.commit()
     conn.close()
     return jsonify({"success": True, "message": "Account created successfully!"}), 201
 
-@app.route("/login", methods=["POST"])
-def login():
-    data = request.json
-    username = data.get("username")
-    password = data.get("password")
-
-    conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
-    user = cursor.fetchone()
-    conn.close()
-
-    if user and check_password_hash(user['password_hash'], password):  # Check password hash
-        session['logged_in'] = True  # Set session to indicate user is logged in
-        return jsonify({"success": True, "message": "Login successful"})
-    else:
-        return jsonify({"success": False, "message": "Invalid credentials"}), 401
-
 @app.route("/logout", methods=["POST"])
 def logout():
-    session.pop('logged_in', None)  # Remove the session to log out the user
+    session.pop('logged_in', None)
     return jsonify({"success": True, "message": "Logged out successfully"})
 
 @app.route("/inventory", methods=["GET"])
-@login_required  # Apply login check here
+@login_required
 def inventory():
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
@@ -110,7 +123,7 @@ def inventory():
     return jsonify(rows)
 
 @app.route("/orders", methods=["GET"])
-@login_required  # Apply login check here
+@login_required
 def orders():
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
@@ -120,7 +133,7 @@ def orders():
     return jsonify(rows)
 
 @app.route("/reports", methods=["GET"])
-@login_required  # Apply login check here
+@login_required
 def reports():
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
@@ -128,6 +141,13 @@ def reports():
     rows = cursor.fetchall()
     conn.close()
     return jsonify(rows)
+
+# Catch-all route to serve any .html files from frontend/html
+@app.route('/<path:filename>')
+def serve_static_html(filename):
+    if filename.endswith('.html'):
+        return send_from_directory(FRONTEND_HTML, filename)
+    return "Not Found", 404
 
 if __name__ == "__main__":
     app.run(debug=True)
