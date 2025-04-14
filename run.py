@@ -4,13 +4,16 @@ import time
 import venv
 from pathlib import Path
 import webbrowser
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+REQUIREMENTS_FILE = BASE_DIR / "requirements.txt"
+
 
 VENV_DIR = Path("venv")
-REQUIREMENTS_FILE = "requirements.txt"
-
 def create_virtualenv():
     """Create a virtual environment if it doesn't exist."""
-    print("🔧 Creating virtual environment...")
+    print("Creating virtual environment...")
     venv.EnvBuilder(with_pip=True).create(VENV_DIR)
 
 def get_venv_python():
@@ -22,17 +25,18 @@ def get_venv_python():
 
 def install_requirements(python_path):
     """Install dependencies using the venv's Python."""
-    print("📦 Installing dependencies from requirements.txt...")
+    print(" Installing dependencies from requirements.txt...")
     subprocess.check_call([str(python_path), "-m", "pip", "install", "-r", REQUIREMENTS_FILE])
 
 def start_flask(python_path):
     """Start the Flask server using the venv's Python."""
-    print("🚀 Starting Flask server...")
-    return subprocess.Popen([str(python_path), "backend/app.py"])
+    print("Starting Flask server...")
+    app_path = BASE_DIR / "backend" / "app.py"
+    return subprocess.Popen([str(python_path), str(app_path)])
 
 def open_browser():
     """Open the landing page (index.html) in the default web browser."""
-    print("🌐 Opening landing page...")
+    print("Opening landing page...")
     # Change the URL to "/" so that it serves your index.html landing page
     webbrowser.open("http://127.0.0.1:5000/")
 
@@ -49,7 +53,7 @@ def run():
         open_browser()
         flask_process.wait()
     except Exception as e:
-        print(f"❌ An error occurred: {e}")
+        print(f"An error occurred: {e}")
 
 if __name__ == "__main__":
     run()
