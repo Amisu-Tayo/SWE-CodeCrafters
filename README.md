@@ -15,3 +15,4 @@ This project is an ML-powered inventory management system designed for fabric st
 - Predict future inventory needs using machine learning based on sales patterns.
 - Easily update stock information via an interactive interface.
 
+
