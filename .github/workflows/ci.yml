@@ -1,0 +1,47 @@
+name: Build and Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # Trigger this workflow on push to the main branch
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:  # Allow manual trigger of this workflow
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the repository code
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # 2. Set up Node.js (optional, only if using a frontend framework like React)
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'  # or your specific version
+
+      # 3. Install dependencies (optional, only if using npm or yarn)
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm install  # Or use 'yarn install' if you're using Yarn
+
+      # 4. Build your frontend (e.g., with React, Vue, or plain HTML)
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm run build  # Or use the appropriate build command for your framework
+
+      # 5. Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          # The branch for GitHub Pages
+          gh_token: ${{ secrets.GITHUB_TOKEN }}
+          # The folder to deploy (should point to the built files)
+          source: 'frontend/build'  # Change to 'frontend/html' if using plain HTML
+          target: './'
