@@ -8,6 +8,7 @@ from flask import Flask, request, jsonify, session, url_for, redirect, send_from
 from db_config import get_connection
 from flask_cors import CORS
 
+
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY')
 CORS(app)  # Enable CORS for the entire app
@@ -35,6 +36,19 @@ def serve_frontend_files(filename):
 @app.route("/")
 def home():
     return send_from_directory(FRONTEND_HTML, "index.html")
+
+# Test database connection
+@app.route("/test_db", methods=["GET"])
+def test_db():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1")
+        result = cursor.fetchone()
+        conn.close()
+        return jsonify({"success": True, "message": "Database connection successful!", "result": result})
+    except Exception as e:
+        return jsonify({"success": False, "message": f"Database connection failed: {str(e)}"}), 500
 
 # Login route: handle GET and POST
 @app.route("/login", methods=["GET", "POST"])
