@@ -3,7 +3,7 @@
 ## Team Members
 | Name                 | Role |
 |--------------------|----|
-| Haleemah Amisu     | TBD |
+| Haleemah Amisu     | Developer |
 | Joseph Frishkorn   | TBD |
 | Aastha Bhatt       | TBD |
 | Bhuvan Angiraa     | TBD |
