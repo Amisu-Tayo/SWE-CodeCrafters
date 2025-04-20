@@ -3,7 +3,7 @@
 # It is a simple Flask application that responds with "OK" if the database connection is successful,
 # or an error message if there is a problem.
 from flask import Flask, make_response
-from backend.db_config import get_connection
+from api.db_config import get_connection
 
 app = Flask(__name__)
 

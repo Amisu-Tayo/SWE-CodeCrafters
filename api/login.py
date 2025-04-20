@@ -2,7 +2,7 @@
 import os
 from flask import Flask, request, jsonify, make_response
 from werkzeug.security import check_password_hash
-from backend.db_config import get_connection
+from api.db_config import get_connection
 
 app = Flask(__name__)
 

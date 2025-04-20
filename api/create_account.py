@@ -6,7 +6,7 @@ import boto3
 from itsdangerous import URLSafeTimedSerializer
 from flask import Flask, request, jsonify, make_response
 from werkzeug.security import generate_password_hash
-from backend.db_config import get_connection
+from api.db_config import get_connection
 
 app = Flask(__name__)
 app.secret_key = os.environ["FLASK_SECRET_KEY"]

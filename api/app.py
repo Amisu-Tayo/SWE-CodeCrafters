@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Flask, request, jsonify, session, url_for, redirect, send_from_directory
-from backend.db_config import get_connection
+from api.db_config import get_connection
 from flask_cors import CORS
 
 

@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, make_response
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from werkzeug.security import generate_password_hash
-from backend.db_config import get_connection
+from api.db_config import get_connection
 
 # Create the Flask app
 app = Flask(__name__)

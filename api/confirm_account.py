@@ -1,7 +1,7 @@
 import os
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from flask import Flask, request, make_response
-from backend.db_config import get_connection
+from api.db_config import get_connection
 
 app = Flask(__name__)
 app.secret_key = os.environ["FLASK_SECRET_KEY"]
