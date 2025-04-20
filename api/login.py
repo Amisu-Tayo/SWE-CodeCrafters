@@ -1,34 +1,38 @@
-# backend/login.py
 import os
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify, make_response, session
 from werkzeug.security import check_password_hash
 from api.db_config import get_connection
 
 app = Flask(__name__)
 
-@app.route("/", methods=["POST"])
+@app.route("/login", methods=["POST"])
 def login():
     data = request.get_json() or {}
-    email = data.get("email")
+    username = data.get("username")
     password = data.get("password")
 
-    if not email or not password:
-        return make_response("Missing email or password", 400)
+    if not username or not password:
+        return make_response("Missing username or password", 400)
 
     conn = get_connection()
-    cur = conn.cursor(dictionary=True)
-    cur.execute(
-        "SELECT password_hash, is_confirmed FROM users WHERE email = %s",
-        (email,)
-    )
-    user = cur.fetchone()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+    user = cursor.fetchone()
     conn.close()
 
+    # Check if user exists
     if not user:
         return make_response("User not found", 404)
-    if not user["is_confirmed"]:
+
+    # Check if user is confirmed (if you have email confirmation)
+    if not user.get("is_confirmed", False):
         return make_response("Please confirm your email first", 403)
+
+    # Check password hash
     if not check_password_hash(user["password_hash"], password):
         return make_response("Invalid credentials", 401)
 
-    return jsonify(message="Login successful"), 200
+    # Set the session for the logged-in user
+    session['logged_in'] = True
+
+    return jsonify({"success": True, "message": "Login successful"}), 200

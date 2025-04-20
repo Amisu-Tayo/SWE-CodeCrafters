@@ -17,7 +17,8 @@
       }
 
       try {
-        const res = await fetch("/api/login", {
+        // Update fetch URL to match the Flask route
+        const res = await fetch("/login", { // Changed to match the Flask route
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, password })
@@ -26,10 +27,10 @@
         const data = await res.json();
         if (res.ok && data.success) {
           alert(data.message);
-          sessionStorage.setItem("logged_in", "true");
-          window.location.href = "/dashboard.html";
+          sessionStorage.setItem("logged_in", "true");  // Persist session on frontend
+          window.location.href = "/dashboard.html";  // Redirect to dashboard on success
         } else {
-          alert("Login failed: " + (data.message || res.statusText));
+          alert("Login failed: " + (data.message || res.statusText));  // Show error message
         }
       } catch (err) {
         console.error("Login error:", err);
