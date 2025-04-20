@@ -7,7 +7,7 @@ from api.db_config import get_connection
 
 app = Flask(__name__)
 
-@app.route("/", methods=["GET"])
+@app.route("/api/test_db", methods=["GET"])
 def test_db():
     try:
         conn = get_connection()

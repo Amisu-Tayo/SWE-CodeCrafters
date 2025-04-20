@@ -5,7 +5,7 @@ from api.db_config import get_connection
 
 app = Flask(__name__)
 
-@app.route("/login", methods=["POST"])
+@app.route("/api/login", methods=["POST"])
 def login():
     data = request.get_json() or {}
     username = data.get("username")
