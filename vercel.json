@@ -7,9 +7,15 @@
     { "src": "backend/**/*.py",      "use": "@vercel/python" }
   ],
   "routes": [
-    { "src": "/css/(.*)",   "dest": "/frontend/css/$1" },
-    { "src": "/images/(.*)","dest": "/frontend/images/$1" },
-    { "src": "/api/(.*)",   "dest": "/backend/$1.py" },
-    { "src": "/(.*)",       "dest": "/frontend/html/$1" }
+    { "src": "/css/(.*)",       "dest": "/frontend/css/$1" },
+    { "src": "/images/(.*)",    "dest": "/frontend/images/$1" },
+
+    { "src": "/login$",         "dest": "/frontend/html/login.html" },
+    { "src": "/CreateAccount$", "dest": "/frontend/html/CreateAccount.html" },
+    { "src": "/dashboard$",     "dest": "/frontend/html/dashboard.html" },
+
+    { "src": "/api/(.*)",       "dest": "/backend/$1.py" },
+
+    { "src": "/(.*)",           "dest": "/frontend/html/$1" }
   ]
 }
