@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Your Account</title>
+    <link rel="stylesheet" href="/css/login.css">  <!-- Keeping the same style as the other pages -->
+</head>
+<body>
+    <div class="login-container">
+        <h1>Confirm Your Account</h1>
+        <div id="confirmation-message">
+            <!-- Success or failure message will be shown here -->
+            <p>Please wait while we confirm your account...</p>
+        </div>
+    </div>
+
+    <script>
+        // Get the token from the URL query string
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+
+        if (!token) {
+            document.getElementById('confirmation-message').innerHTML = 
+                '<p style="color: red;">Error: No token provided. Please check the link.</p>';
+        } else {
+            // Send the token to the backend for validation
+            fetch('/api/confirm_account', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: token })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('confirmation-message').innerHTML = 
+                        '<p style="color: green;">Your account has been successfully confirmed!</p>';
+                } else {
+                    document.getElementById('confirmation-message').innerHTML = 
+                        `<p style="color: red;">${data.message}</p>`;
+                }
+            })
+            .catch(error => {
+                document.getElementById('confirmation-message').innerHTML = 
+                    '<p style="color: red;">An error occurred while confirming your account. Please try again later.</p>';
+                console.error('Error confirming account:', error);
+            });
+        }
+    </script>
+</body>
+</html>

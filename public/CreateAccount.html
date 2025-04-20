@@ -100,8 +100,7 @@
       const userData = {
         username,
         email,
-        // Encode password before sending; server expects `password_hash`
-        password_hash: btoa(password)
+        password: password
       };
 
       try {

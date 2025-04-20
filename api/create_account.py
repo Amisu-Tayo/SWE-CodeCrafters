@@ -25,17 +25,21 @@ SENDER = os.environ["SES_SENDER_EMAIL"]
 def create_account():
     data = request.get_json() or {}
     email = data.get("email")
-    password_hash = data.get("password_hash")
+    password = data.get("password")
+    username = data.get("username")
 
     if not email or not password_hash:
         return make_response("Missing email or password_hash", 400)
+    
+    password_hash = generate_password_hash(password, method='scrypt')  # Hash password on backend
+
 
     # 1) Insert user as unconfirmed
     conn = get_connection()
     cur = conn.cursor()
     cur.execute(
-        "INSERT INTO users (email, password_hash, is_confirmed) VALUES (%s, %s, 0)",
-        (email, password_hash)
+        "INSERT INTO users (username, email, password_hash, is_confirmed) VALUES (%s, %s, %s, 0)",
+        (username, email, password_hash)
     )
     user_id = cur.lastrowid
     conn.commit()
