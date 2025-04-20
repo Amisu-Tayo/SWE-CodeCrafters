@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "builds": [
+    // static assets
+    { "src": "frontend/html/**/*",   "use": "@vercel/static" },
+    { "src": "frontend/css/**/*",    "use": "@vercel/static" },
+    { "src": "frontend/images/**/*", "use": "@vercel/static" },
+    // your Python backend
+    { "src": "backend/**/*.py",      "use": "@vercel/python" }
+  ],
+  "routes": [
+    // serve CSS & images from their folders
+    { "src": "/css/(.*)",   "dest": "/frontend/css/$1" },
+    { "src": "/images/(.*)","dest": "/frontend/images/$1" },
+    // expose your Python functions under /api/
+    { "src": "/api/(.*)",   "dest": "/backend/$1.py" },
+    // everything else hits your HTML
+    { "src": "/(.*)",       "dest": "/frontend/html/$1" }
+  ]
+}
