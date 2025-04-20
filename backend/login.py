@@ -1,12 +1,19 @@
+# backend/login.py
 import os
-import json
+from flask import Flask, request, jsonify, make_response
 from werkzeug.security import check_password_hash
 from backend.db_config import get_connection
 
-def handler(request):
-    data = request.get_json()
+app = Flask(__name__)
+
+@app.route("/", methods=["POST"])
+def login():
+    data = request.get_json() or {}
     email = data.get("email")
     password = data.get("password")
+
+    if not email or not password:
+        return make_response("Missing email or password", 400)
 
     conn = get_connection()
     cur = conn.cursor(dictionary=True)
@@ -18,17 +25,10 @@ def handler(request):
     conn.close()
 
     if not user:
-        return {"statusCode": 404, "body": "User not found"}
-
+        return make_response("User not found", 404)
     if not user["is_confirmed"]:
-        return {"statusCode": 403, "body": "Please confirm your email first"}
-
+        return make_response("Please confirm your email first", 403)
     if not check_password_hash(user["password_hash"], password):
-        return {"statusCode": 401, "body": "Invalid credentials"}
+        return make_response("Invalid credentials", 401)
 
-    # On success: return minimal JSON 
-    return {
-        "statusCode": 200,
-        "headers": {"Content-Type": "application/json"},
-        "body": json.dumps({"message": "Login successful"})
-    }
+    return jsonify(message="Login successful"), 200
