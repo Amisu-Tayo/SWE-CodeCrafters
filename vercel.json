@@ -1,20 +1,15 @@
 {
   "version": 2,
   "builds": [
-    { "src": "backend/**/*.py",      "use": "@vercel/python" },
-    { "src": "frontend/css/**/*",    "use": "@vercel/static" },
-    { "src": "frontend/images/**/*", "use": "@vercel/static" },
-    { "src": "frontend/html/**/*",   "use": "@vercel/static" }
+    { "src": "api/**/*.py",            "use": "@vercel/python" },
+    { "src": "frontend/css/**/*",      "use": "@vercel/static" },
+    { "src": "frontend/images/**/*",   "use": "@vercel/static" },
+    { "src": "frontend/html/**/*",     "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/test_db$",        "dest": "/backend/test_db.py" },
-    { "src": "/api/(.*)$",           "dest": "/backend/$1.py" },
-    { "src": "/css/(.*)$",           "dest": "/frontend/css/$1" },
-    { "src": "/images/(.*)$",        "dest": "/frontend/images/$1" },
-    { "src": "/",                    "dest": "/frontend/html/index.html" },
-    { "src": "/login.html$",         "dest": "/frontend/html/login.html" },
-    { "src": "/CreateAccount.html$", "dest": "/frontend/html/CreateAccount.html" },
-    { "src": "/dashboard.html$",     "dest": "/frontend/html/dashboard.html" },
-    { "src": "/(.*\\.html)$",        "dest": "/frontend/html/$1" }
+    { "src": "/css/(.*)",              "dest": "/frontend/css/$1" },
+    { "src": "/images/(.*)",           "dest": "/frontend/images/$1" },
+    { "src": "/",                      "dest": "/frontend/html/index.html" },
+    { "src": "/(.*\\.html)$",          "dest": "/frontend/html/$1" }
   ]
 }
