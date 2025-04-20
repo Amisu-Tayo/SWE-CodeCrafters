@@ -1,15 +1,16 @@
 {
   "version": 2,
   "builds": [
-    { "src": "api/**/*.py",            "use": "@vercel/python" },
-    { "src": "frontend/css/**/*",      "use": "@vercel/static" },
-    { "src": "frontend/images/**/*",   "use": "@vercel/static" },
-    { "src": "frontend/html/**/*",     "use": "@vercel/static" }
+    { "src": "api/**/*.py",           "use": "@vercel/python" },
+    { "src": "frontend/css/**/*",     "use": "@vercel/static" },
+    { "src": "frontend/images/**/*",  "use": "@vercel/static" },
+    { "src": "frontend/html/**/*",    "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/css/(.*)",              "dest": "/frontend/css/$1" },
-    { "src": "/images/(.*)",           "dest": "/frontend/images/$1" },
-    { "src": "/",                      "dest": "/frontend/html/index.html" },
-    { "src": "/(.*\\.html)$",          "dest": "/frontend/html/$1" }
+    { "src": "^/api/(.*)$",           "dest": "/api/$1.py" },
+    { "src": "^/css/(.*)$",           "dest": "/frontend/css/$1" },
+    { "src": "^/images/(.*)$",        "dest": "/frontend/images/$1" },
+    { "src": "^/$",                   "dest": "/frontend/html/index.html" },
+    { "src": "^/(.*\\.html)$",        "dest": "/frontend/html/$1" }
   ]
 }
