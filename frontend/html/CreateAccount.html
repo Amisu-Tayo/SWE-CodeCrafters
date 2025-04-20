@@ -2,12 +2,12 @@
 <html>
 <head>
   <title>Create Account</title>
-  <link rel="stylesheet" href="/frontend/css/login.css">
+  <link rel="stylesheet" href="/css/login.css">
 </head>
 <body>
   <div class="login-container">
-      <h1>Create Your Account</h1>
-      <form id="regForm">
+    <h1>Create Your Account</h1>
+    <form id="regForm">
       <input type="text" id="uname" placeholder="Username" required />
       <p id="p1"></p>
 
@@ -23,12 +23,12 @@
       <button type="submit">Create Account</button>
     </form>
     <div class="links">
-      <a href="login.html" class="link">Login</a>
-  </div>
+      <a href="/login.html" class="link">Login</a>
+    </div>
   </div>
 
   <script>
-    document.getElementById("regForm").addEventListener("submit", function (e) {
+    document.getElementById("regForm").addEventListener("submit", async function (e) {
       e.preventDefault();
 
       let valid = true;
@@ -36,7 +36,6 @@
       const password = document.getElementById("pswd").value;
       const confirmPassword = document.getElementById("cpswd").value;
       const email = document.getElementById("eml").value.trim();
-      
 
       // Username validation
       if (!username || /^\d/.test(username)) {
@@ -74,7 +73,6 @@
         document.getElementById("p2").style.color = "green";
       }
 
-
       // Confirm password
       if (password !== confirmPassword) {
         document.getElementById("p3").innerText = "Passwords do not match.";
@@ -84,7 +82,6 @@
         document.getElementById("p3").innerText = "Valid";
         document.getElementById("p3").style.color = "green";
       }
-
 
       // Email validation
       const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
@@ -97,37 +94,33 @@
         document.getElementById("p4").style.color = "green";
       }
 
-      
+      if (!valid) return;
 
-      // Save data and redirect
-      if (valid) {
-        const userData = {
-          username: username,
-          password: password,
-          email: email
-        };
-         // Send a POST request to the Flask backend to create the user
-         fetch("http://127.0.0.1:5000/CreateAccount", {
+      // Prepare payload
+      const userData = {
+        username,
+        email,
+        // Encode password before sending; server expects `password_hash`
+        password_hash: btoa(password)
+      };
+
+      try {
+        const res = await fetch("/api/create_account", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(userData)
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            alert("Account created successfully!");
-            window.location.href = "login.html";  // Redirect to login page after successful account creation
-          } else {
-            alert("Error: " + data.message);  // Display any error messages from backend
-          }
-        })
-        .catch(error => {
-          console.error("Error:", error);
-          alert("An error occurred. Please try again later.");
         });
-    
+
+        if (res.ok) {
+          alert("Account created! Check your email to confirm.");
+          window.location.href = "/login.html";
+        } else {
+          const text = await res.text();
+          alert("Error: " + text);
+        }
+      } catch (err) {
+        console.error("Request failed", err);
+        alert("An error occurred. Please try again later.");
       }
     });
   </script>
