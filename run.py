@@ -37,8 +37,7 @@ def start_flask(python_path):
 def open_browser():
     """Open the landing page (index.html) in the default web browser."""
     print("Opening landing page...")
-    # Change the URL to "/" so that it serves your index.html landing page
-    webbrowser.open("http://127.0.0.1:5000/")
+    webbrowser.open("https://fims.store/")
 
 def run():
     """Main function to execute setup and run the application."""
