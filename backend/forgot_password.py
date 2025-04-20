@@ -2,7 +2,7 @@ import os
 import json
 import boto3
 from itsdangerous import URLSafeTimedSerializer
-from db_config import get_connection
+from backend.db_config import get_connection
 
 ses = boto3.client(
     "ses",

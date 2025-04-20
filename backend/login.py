@@ -1,7 +1,7 @@
 import os
 import json
 from werkzeug.security import check_password_hash
-from db_config import get_connection
+from backend.db_config import get_connection
 
 def handler(request):
     data = request.get_json()

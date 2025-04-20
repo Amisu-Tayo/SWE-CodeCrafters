@@ -1,7 +1,7 @@
 import os
 import json
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
-from db_config import get_connection
+from backend.db_config import get_connection
 
 serializer = URLSafeTimedSerializer(os.environ["FLASK_SECRET_KEY"])
 

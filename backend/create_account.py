@@ -3,7 +3,7 @@ import json
 import uuid
 import boto3
 from itsdangerous import URLSafeTimedSerializer
-from db_config import get_connection
+from backend.db_config import get_connection
 
 # Prepare SES client & token serializer
 ses = boto3.client(
