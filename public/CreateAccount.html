@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Create Account</title>
-  <link rel="stylesheet" href="/public/css/login.css">
+  <link rel="stylesheet" href="/css/login.css">
 </head>
 <body>
   <div class="login-container">
@@ -23,7 +23,7 @@
       <button type="submit">Create Account</button>
     </form>
     <div class="links">
-      <a href="/public/login.html" class="link">Login</a>
+      <a href="/login.html" class="link">Login</a>
     </div>
   </div>
 
@@ -113,7 +113,7 @@
 
         if (res.ok) {
           alert("Account created! Check your email to confirm.");
-          window.location.href = "/public/login.html";
+          window.location.href = "/login.html";
         } else {
           const text = await res.text();
           alert("Error: " + text);
