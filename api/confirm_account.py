@@ -7,7 +7,7 @@ app = Flask(__name__)
 app.secret_key = os.environ["FLASK_SECRET_KEY"]
 serializer = URLSafeTimedSerializer(os.environ["FLASK_SECRET_KEY"])
 
-@app.route("/", methods=["GET"])
+@app.route("/confirm", methods=["GET"])
 def confirm_account():
     token = request.args.get("token")
     if not token:
@@ -22,10 +22,7 @@ def confirm_account():
 
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute(
-        "UPDATE users SET is_confirmed = 1 WHERE email = %s",
-        (email,)
-    )
+    cur.execute("UPDATE users SET is_confirmed = 1 WHERE email = %s", (email,))
     conn.commit()
     conn.close()
 

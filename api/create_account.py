@@ -1,5 +1,3 @@
-# backend/create_account.py
-
 import os
 import json
 import boto3
@@ -21,22 +19,38 @@ ses = boto3.client(
 serializer = URLSafeTimedSerializer(os.environ["FLASK_SECRET_KEY"])
 SENDER = os.environ["SES_SENDER_EMAIL"]
 
-@app.route("/", methods=["POST"])
+@app.route("/api/create_account", methods=["POST"])  # Define the correct route for the API
 def create_account():
     data = request.get_json() or {}
     email = data.get("email")
     password = data.get("password")
     username = data.get("username")
 
-    if not email or not password_hash:
-        return make_response("Missing email or password_hash", 400)
-    
-    password_hash = generate_password_hash(password, method='scrypt')  # Hash password on backend
+    if not email or not password or not username:
+        return make_response("Missing email, password, or username", 400)  # Check if any required field is missing
 
-
-    # 1) Insert user as unconfirmed
+    # Check if the username already exists in the database
     conn = get_connection()
     cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE username = %s", (username,))
+    existing_user = cur.fetchone()
+
+    if existing_user:
+        conn.close()
+        return make_response("Username already exists", 400)
+
+    # Check if the email already exists in the database
+    cur.execute("SELECT * FROM users WHERE email = %s", (email,))
+    existing_email = cur.fetchone()
+
+    if existing_email:
+        conn.close()
+        return make_response("Email already registered. Please log in", 400)
+
+    # Generate the password hash here
+    password_hash = generate_password_hash(password, method='scrypt')  # Hash password on backend
+
+    # 1) Insert user as unconfirmed
     cur.execute(
         "INSERT INTO users (username, email, password_hash, is_confirmed) VALUES (%s, %s, %s, 0)",
         (username, email, password_hash)
@@ -69,3 +83,6 @@ def create_account():
         return make_response(f"Email send failed: {e}", 500)
 
     return jsonify(user_id=user_id), 201
+
+if __name__ == "__main__":
+    app.run(debug=True)

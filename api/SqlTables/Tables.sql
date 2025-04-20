@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
+    is_confirmed TINYINT(1) DEFAULT 0,
     role ENUM('Admin', 'Inventory Manager', 'Staff Member', 'Business Owner') NOT NULL
 );
 
