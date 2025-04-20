@@ -28,7 +28,7 @@ def handler(request):
 
     # Generate reset token
     token = serializer.dumps(email, salt="password-reset-salt")
-    reset_url = f"https://fims.vercel.app/reset.html?token={token}"
+    reset_url = f"https://fims.store/reset.html?token={token}"
 
     # Send email
     ses.send_email(

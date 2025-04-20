@@ -26,7 +26,7 @@ def handler(request):
     if not check_password_hash(user["password_hash"], password):
         return {"statusCode": 401, "body": "Invalid credentials"}
 
-    # On success: return minimal JSON (you can issue your own JWT here)
+    # On success: return minimal JSON 
     return {
         "statusCode": 200,
         "headers": {"Content-Type": "application/json"},

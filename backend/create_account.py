@@ -34,7 +34,7 @@ def handler(request):
     # 2) Generate confirmation token & URL
     token = serializer.dumps(email, salt="email-confirm-salt")
     confirm_url = (
-        f"https://fims.vercel.app/confirm.html?token={token}"
+        f"https://fims.store/confirm.html?token={token}"
     )
 
     # 3) Send email via SES
