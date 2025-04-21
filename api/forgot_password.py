@@ -19,7 +19,7 @@ ses = boto3.client(
 serializer = URLSafeTimedSerializer(os.environ["FLASK_SECRET_KEY"])
 SENDER = os.environ["SES_SENDER_EMAIL"]
 
-@app.route("/", methods=["POST"])
+@app.route("/api/forgot_password", methods=["POST"])
 def forgot_password():
     data = request.get_json() or {}
     email = data.get("email")
@@ -37,7 +37,7 @@ def forgot_password():
 
     # Generate reset token & URL
     token = serializer.dumps(email, salt="password-reset-salt")
-    reset_url = f"https://fims.store/reset.html?token={token}"
+    reset_url = f"https://fims.store/ResetPassword.html?token={token}"
 
     # Send reset email via SES
     try:
@@ -45,7 +45,7 @@ def forgot_password():
             Source=SENDER,
             Destination={"ToAddresses": [email]},
             Message={
-                "Subject": {"Data": "Password reset"},
+                "Subject": {"Data": "FIMS Password reset"},
                 "Body": {
                     "Html": {
                         "Data": f"Click <a href='{reset_url}'>here</a> to reset your password."
