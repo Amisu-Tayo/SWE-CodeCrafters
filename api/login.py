@@ -36,3 +36,7 @@ def login():
     session['logged_in'] = True
 
     return jsonify({"success": True, "message": "Login successful"}), 200
+
+    if __name__ == "__main__":
+        app.secret_key = os.environ["FLASK_SECRET_KEY"]
+        app.run(debug=True)   # ← enables traceback in the response

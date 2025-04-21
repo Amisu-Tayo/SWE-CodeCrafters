@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Simple Dashboard</title>
-  <link rel="stylesheet" href="/styles.css" />
+  <title>Dashboard - Fabric Inventory Management</title>
+  <link rel="stylesheet" href="/style.css" />
   <script>
     // On page load or when accessing a protected page
 window.onload = function() {
     if (!sessionStorage.getItem('logged_in')) {
         alert("Please log in first.");
-        window.location.href = "login.html";  // Redirect to login page if not logged in
+        window.location.href = "/login.html";  // Redirect to login page if not logged in
     }
 }
 
@@ -22,10 +22,9 @@ window.onload = function() {
       <h2 class="logo">MyDashboard</h2>
       <nav>
         <ul>
-          <li><a href="party.html">Party Wear</a></li>
-          <li><a href="Western.html">Western</a></li>
-          <li><a href="kurtas.html">kurtas</a></li>
-          <li><a href="menwear.html">Men wear</a></li>
+          <li><a href="/inventory.html">Inventory</a></li>
+          <li><a href="/orders.html">Orders</a></li>
+          <li><a href="/reports.html">Reports</a></li>
         </ul>
       </nav>
     </aside>
