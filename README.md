@@ -45,9 +45,3 @@ This project is an ML-powered inventory management system designed for fabric st
 
 ---
 
-## 📦 Installation
-
-1. **Clone the repo**  
-   ```bash
-   git clone https://github.com/your‑username/your‑repo.git
-   cd your‑repo
