@@ -24,14 +24,16 @@ def forgot_password():
 
     conn = get_connection()
     cur = conn.cursor()
-    # <-- use user_id, not id -->
+   
     cur.execute("SELECT user_id FROM users WHERE email = %s", (email,))
     row = cur.fetchone()
     conn.close()
+    if not row:
+        return jsonify(success=False, message="User not found"), 404
 
     if row:
         token = serializer.dumps(email, salt="password-reset-salt")
-        link = f"https://fims.store/reset_password.html?token={token}"
+        link = f"https://fims.store/ResetPassword.html?token={token}"
         ses.send_email(
           Source=SENDER,
           Destination={"ToAddresses": [email]},
@@ -42,4 +44,4 @@ def forgot_password():
         )
     # always 200 so we don’t leak
     return jsonify(success=True,
-                   message="If that email exists, a reset link has been sent."), 200
+                   message="A reset link has been sent! Check your email"), 200
