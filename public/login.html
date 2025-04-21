@@ -18,7 +18,7 @@
 
       try {
         // Update fetch URL to match the Flask route
-        const res = await fetch("/login", { // Changed to match the Flask route
+        const res = await fetch("/api/login", { // Changed to match the Flask route
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, password })
