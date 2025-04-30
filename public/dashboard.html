@@ -5,15 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard - Fabric Inventory Management</title>
   <link rel="stylesheet" href="/style.css" />
+
   <script>
-    ;(async()=>{
-      // Optional: verify with the server, not just sessionStorage
-      // const res = await fetch('/api/check_session',{ credentials:'include' })
-      // const { logged_in } = await res.json();
-      const logged_in = sessionStorage.getItem('logged_in') === 'true';
-      if (!logged_in) location.replace('/login.html');
+    (async () => {
+      // 1) Clear any stale client flag & server session on load
+      sessionStorage.removeItem('logged_in');
+      await fetch('/api/logout', { method: 'POST', credentials: 'include' });
+
+      // 2) Redirect if not actually logged in
+      
+      try {
+        const res = await fetch('/api/check_session', { credentials: 'include' });
+        const { logged_in } = await res.json();
+        if (!logged_in) {
+          location.replace('/login.html');
+        }
+      } catch {
+        location.replace('/login.html');
+      }
     })();
-    </script>
+  </script>
+
+  <script>
+    // 3) Idle timer: auto-logout after 10 min of no activity
+    ;(() => {
+      let idleTimer;
+      const logoutNow = async () => {
+        await fetch('/api/logout', { method: 'POST', credentials: 'include' });
+        sessionStorage.clear();
+        location.replace('/login.html');
+      };
+      const reset = () => {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(logoutNow, 10 * 60 * 1000);
+      };
+      ['load','mousemove','mousedown','click','scroll','keypress','touchstart']
+        .forEach(evt => window.addEventListener(evt, reset));
+      reset();
+    })();
+  </script>
+
+  <script>
+    // 4) Tab close: send a beacon to log out immediately
+    window.addEventListener('beforeunload', () => {
+      navigator.sendBeacon('/api/logout');
+    });
+  </script>
 </head>
 <body>
   <div class="dashboard">
@@ -24,26 +61,9 @@
           <li><a href="/inventory.html">Inventory</a></li>
           <li><a href="/orders.html">Orders</a></li>
           <li><a href="/reports.html">Reports</a></li>
-          <button id="logoutButton">Logout</button>
-
-<script>
-document.getElementById("logoutButton").addEventListener("click", async () => {
-  try {
-    const res = await fetch("/api/logout", {
-      method: "POST",
-      credentials: "include"
-    });
-    if (res.ok) {
-      // clear the client‑side flag
-      sessionStorage.removeItem("logged_in");
-      window.location.href = "/login.html";
-    }
-  } catch (err) {
-    console.error("Logout failed", err);
-  }
-});
-</script>
         </ul>
+        <!-- Logout button moved outside of the UL -->
+        <button id="logoutButton">Logout</button>
       </nav>
     </aside>
 
@@ -53,27 +73,24 @@ document.getElementById("logoutButton").addEventListener("click", async () => {
         <input type="text" placeholder="Search..." class="search" />
       </header>
 
-      
-
+      <!-- your cards… -->
       <section class="cards">
-        <div class="card">
-          <h3>Users</h3>
-          <p>1,200</p>
-        </div>
-        <div class="card">
-          <h3>Products</h3>
-          <p>150</p>
-        </div>
-        <div class="card">
-          <h3>Orders</h3>
-          <p>320</p>
-        </div>
-        <div class="card">
-          <h3>Feedback</h3>
-          <p>Text</p>
-        </div>
+        <!-- … -->
       </section>
     </main>
   </div>
+
+  <script>
+    // 5) Manual logout handler
+    document.getElementById('logoutButton').addEventListener('click', async () => {
+      try {
+        await fetch('/api/logout', { method: 'POST', credentials: 'include' });
+      } catch (err) {
+        console.error('Logout failed', err);
+      }
+      sessionStorage.clear();
+      location.replace('/login.html');
+    });
+  </script>
 </body>
 </html>

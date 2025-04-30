@@ -7,15 +7,22 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Flask, request, jsonify, session, url_for, redirect, send_from_directory
 from api.db_config import get_connection
 from flask_cors import CORS
+from datetime import timedelta
 
+# Load environment variables
+dotenv_path = os.path.join(os.path.dirname(__file__), '..', '.env')
+load_dotenv(dotenv_path)
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY')
 CORS(app)  # Enable CORS for the entire app
 
+# Make sessions permanent so we can apply a lifetime
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=10)
+
 # Define directories
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-FRONTEND_ROOT = os.path.join(BASE_DIR, "..", "frontend")
+FRONTEND_ROOT = os.path.join(BASE_DIR, "..", "public")
 FRONTEND_HTML = os.path.join(FRONTEND_ROOT, "html")
 
 # Decorator to check if user is logged in
@@ -53,29 +60,31 @@ def test_db():
 # Login route: handle GET and POST
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "POST":
-        data = request.json
-        username = data.get("username")
-        password = data.get("password")
+     data = request.json
+     username = data.get("username")
+     password = data.get("password")
+     conn = get_connection()
+     cursor = conn.cursor(dictionary=True)
+     cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+     user = cursor.fetchone()
+     conn.close()
 
-        conn = get_connection()
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
-        user = cursor.fetchone()
-        conn.close()
-
-        if user and check_password_hash(user['password_hash'], password):
+     if user and check_password_hash(user['password_hash'], password):
+            session.permanent = True
             session['logged_in'] = True
             return jsonify({"success": True, "message": "Login successful"})
-        else:
+     else:
             return jsonify({"success": False, "message": "Invalid credentials"}), 401
-    else:
-        # Serve login.html on GET requests
-        return send_from_directory(FRONTEND_HTML, "login.html")
+    
+# Serve login page
+@app.route('/login', methods=['GET'])
+def login_page():
+    return send_from_directory(FRONTEND_HTML, 'login.html')
 
+# Serve create account page
 @app.route("/CreateAccount", methods=["GET", "POST"])
 def CreateAccount():
-    data = request.json
+    data = request.json or {}
     username = data.get("username")
     password = data.get("password")
     email = data.get("email")
@@ -123,7 +132,7 @@ def CreateAccount():
 
 @app.route("/logout", methods=["POST"])
 def logout():
-    session.pop('logged_in', None)
+    session.clear()
     return jsonify({"success": True, "message": "Logged out successfully"})
 
 @app.route("/inventory", methods=["GET"])
