@@ -5,9 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login – Fabric Inventory Management</title>
   <link rel="stylesheet" href="/css/login.css" />
+
   <script>
+    // Clear the form on initial load
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('loginForm').reset();
+    });
+
+    // Clear the form when coming back via back/forward cache
+    window.addEventListener('pageshow', event => {
+      if (event.persisted) {
+        document.getElementById('loginForm').reset();
+      }
+    });
+
     async function handleLogin(event) {
       event.preventDefault();
+
       const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value;
 
@@ -17,8 +31,7 @@
       }
 
       try {
-        // Update fetch URL to match the Flask route
-        const res = await fetch("/api/login", { // Changed to match the Flask route
+        const res = await fetch("/api/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, password })
@@ -27,10 +40,10 @@
         const data = await res.json();
         if (res.ok && data.success) {
           alert(data.message);
-          sessionStorage.setItem("logged_in", "true");  // Persist session on frontend
-          window.location.href = "/dashboard.html";  // Redirect to dashboard on success
+          sessionStorage.setItem("logged_in", "true");
+          window.location.href = "/dashboard.html";
         } else {
-          alert("Login failed: " + (data.message || res.statusText));  // Show error message
+          alert("Login failed: " + (data.message || res.statusText));
         }
       } catch (err) {
         console.error("Login error:", err);
@@ -46,6 +59,7 @@
       <input
         type="text"
         id="username"
+        autocomplete="off"
         placeholder="Enter your username"
         required
       />
@@ -53,6 +67,7 @@
       <input
         type="password"
         id="password"
+        autocomplete="new-password"
         placeholder="Enter your password"
         required
       />
