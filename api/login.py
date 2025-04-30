@@ -38,6 +38,7 @@ def login():
             return make_response("Invalid credentials", 401)
 
         # Set the session for the logged-in user
+        session.permanent = True  # Make the session permanent
         session['logged_in'] = True
 
         return jsonify({"success": True, "message": "Login successful"}), 200

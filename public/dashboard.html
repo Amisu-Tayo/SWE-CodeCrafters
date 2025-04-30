@@ -3,94 +3,79 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard - Fabric Inventory Management</title>
+  <title>Dashboard – Fabric Inventory Management</title>
   <link rel="stylesheet" href="/style.css" />
 
   <script>
-    (async () => {
-      // 1) Clear any stale client flag & server session on load
-      sessionStorage.removeItem('logged_in');
+  (async () => {
+    // SESSION CHECK — this hits /api/check_session (and refreshes the Flask session expiry)
+    try {
+      const res = await fetch('/api/check_session', { credentials: 'include' });
+      const { logged_in } = await res.json();
+      if (!logged_in) throw new Error();
+    } catch {
+      return location.replace('/login.html');
+    }
+
+    // IDLE TIMEOUT (10 min)
+    let idleTimer;
+    const logoutNow = async () => {
       await fetch('/api/logout', { method: 'POST', credentials: 'include' });
-
-      // 2) Redirect if not actually logged in
-      
-      try {
-        const res = await fetch('/api/check_session', { credentials: 'include' });
-        const { logged_in } = await res.json();
-        if (!logged_in) {
-          location.replace('/login.html');
-        }
-      } catch {
-        location.replace('/login.html');
-      }
-    })();
-  </script>
-
-  <script>
-    // 3) Idle timer: auto-logout after 10 min of no activity
-    ;(() => {
-      let idleTimer;
-      const logoutNow = async () => {
-        await fetch('/api/logout', { method: 'POST', credentials: 'include' });
-        sessionStorage.clear();
-        location.replace('/login.html');
-      };
-      const reset = () => {
-        clearTimeout(idleTimer);
-        idleTimer = setTimeout(logoutNow, 10 * 60 * 1000);
-      };
-      ['load','mousemove','mousedown','click','scroll','keypress','touchstart']
-        .forEach(evt => window.addEventListener(evt, reset));
-      reset();
-    })();
-  </script>
-
-  <script>
-    // 4) Tab close: send a beacon to log out immediately
-    window.addEventListener('beforeunload', () => {
-      navigator.sendBeacon('/api/logout');
-    });
+      location.replace('/login.html');
+    };
+    const resetIdle = () => {
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(logoutNow, 10 * 60 * 1000);
+    };
+    ['load','mousemove','mousedown','click','scroll','keypress','touchstart']
+      .forEach(evt => window.addEventListener(evt, resetIdle));
+    resetIdle();
+  })();
   </script>
 </head>
 <body>
   <div class="dashboard">
     <aside class="sidebar">
-      <h2 class="logo">MyDashboard</h2>
+      <h2 class="logo">FIMS</h2>
       <nav>
         <ul>
           <li><a href="/inventory.html">Inventory</a></li>
           <li><a href="/orders.html">Orders</a></li>
           <li><a href="/reports.html">Reports</a></li>
         </ul>
-        <!-- Logout button moved outside of the UL -->
         <button id="logoutButton">Logout</button>
       </nav>
     </aside>
 
     <main class="main">
-      <header class="header">
-        <h1>Dashboard</h1>
-        <input type="text" placeholder="Search..." class="search" />
-      </header>
-
-      <!-- your cards… -->
+      <header class="header"><h1>Dashboard</h1></header>
       <section class="cards">
-        <!-- … -->
+        <div class="card"><h3>Total SKUs</h3><p id="total-skus">–</p></div>
+        <div class="card"><h3>Total Value</h3><p id="total-value">–</p></div>
+        <div class="card"><h3>Low Stock</h3><p id="low-stock">–</p></div>
+        <div class="card"><h3>Pending Orders</h3><p id="pending-orders">–</p></div>
       </section>
     </main>
   </div>
 
   <script>
-    // 5) Manual logout handler
-    document.getElementById('logoutButton').addEventListener('click', async () => {
-      try {
-        await fetch('/api/logout', { method: 'POST', credentials: 'include' });
-      } catch (err) {
-        console.error('Logout failed', err);
-      }
-      sessionStorage.clear();
-      location.replace('/login.html');
-    });
+  // MANUAL LOGOUT
+  document.getElementById('logoutButton').addEventListener('click', async () => {
+    await fetch('/api/logout', { method: 'POST', credentials: 'include' });
+    location.replace('/login.html');
+  });
+
+  // LOAD SUMMARY DATA
+  (async () => {
+    const inv = await fetch('/inventory', { credentials: 'include' }).then(r=>r.json());
+    document.getElementById('total-skus').innerText = inv.length;
+    const totalVal = inv.reduce((sum,i)=>sum + i.quantity * parseFloat(i.price_per_unit),0);
+    document.getElementById('total-value').innerText = `$${totalVal.toFixed(2)}`;
+    document.getElementById('low-stock').innerText = inv.filter(i=>i.quantity < i.restock_threshold).length;
+
+    const orders = await fetch('/orders', { credentials: 'include' }).then(r=>r.json());
+    document.getElementById('pending-orders').innerText = orders.filter(o=>o.status==='Pending').length;
+  })();
   </script>
 </body>
 </html>
