@@ -1,33 +1,68 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Create Account</title>
-  <link rel="stylesheet" href="/css/login.css">
-</head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Account – Fabric Inventory Management</title>
+  <link rel="stylesheet" href="/css/login.css" />
 
-<script>
-  window.addEventListener('DOMContentLoaded',()=>{
-    document.querySelectorAll('input[type="text"], input[type="password"]').forEach(i=> i.value='');
-  });
+  <script>
+    // Clear all text/password/email fields on initial load
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('regForm').reset();
+    });
+
+    // Clear the form when coming back via back/forward cache
+    window.addEventListener('pageshow', event => {
+      if (event.persisted) {
+        document.getElementById('regForm').reset();
+      }
+    });
   </script>
+</head>
 <body>
   <div class="login-container">
     <h1>Create Your Account</h1>
-    <form id="regForm", autocomplete="off">
-      <input type="text" id="uname" placeholder="Username" required />
+    <form id="regForm" autocomplete="off">
+      <input 
+        type="text" 
+        id="uname" 
+        autocomplete="off" 
+        placeholder="Username" 
+        required 
+      />
       <p id="p1"></p>
 
-      <input type="password" id="pswd" placeholder="Password" required />
+      <input 
+        type="password" 
+        id="pswd" 
+        autocomplete="new-password" 
+        placeholder="Password" 
+        required 
+      />
       <p id="p2"></p>
 
-      <input type="password" id="cpswd" placeholder="Confirm Password" required />
+      <input 
+        type="password" 
+        id="cpswd" 
+        autocomplete="new-password" 
+        placeholder="Confirm Password" 
+        required 
+      />
       <p id="p3"></p>
 
-      <input type="email" id="eml" placeholder="Email" required />
+      <input 
+        type="email" 
+        id="eml" 
+        autocomplete="off" 
+        placeholder="Email" 
+        required 
+      />
       <p id="p4"></p>
 
       <button type="submit">Create Account</button>
     </form>
+
     <div class="links">
       <a href="/login.html" class="link">Login</a>
     </div>
@@ -103,11 +138,7 @@
       if (!valid) return;
 
       // Prepare payload
-      const userData = {
-        username,
-        email,
-        password
-      };
+      const userData = { username, email, password };
 
       try {
         const res = await fetch("/api/create_account", {
