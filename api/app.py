@@ -28,7 +28,7 @@ def login_required(f):
     return decorated_function
 
 # Route to serve static files from the frontend folder (CSS, images, etc.)
-@app.route("/frontend/<path:filename>")
+@app.route("/public/<path:filename>")
 def serve_frontend_files(filename):
     return send_from_directory(FRONTEND_ROOT, filename)
 

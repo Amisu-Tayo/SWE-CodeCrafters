@@ -6,15 +6,14 @@
   <title>Dashboard - Fabric Inventory Management</title>
   <link rel="stylesheet" href="/style.css" />
   <script>
-    // On page load or when accessing a protected page
-window.onload = function() {
-    if (!sessionStorage.getItem('logged_in')) {
-        alert("Please log in first.");
-        window.location.href = "/login.html";  // Redirect to login page if not logged in
-    }
-}
-
-  </script>
+    ;(async()=>{
+      // Optional: verify with the server, not just sessionStorage
+      // const res = await fetch('/api/check_session',{ credentials:'include' })
+      // const { logged_in } = await res.json();
+      const logged_in = sessionStorage.getItem('logged_in') === 'true';
+      if (!logged_in) location.replace('/login.html');
+    })();
+    </script>
 </head>
 <body>
   <div class="dashboard">
@@ -25,6 +24,25 @@ window.onload = function() {
           <li><a href="/inventory.html">Inventory</a></li>
           <li><a href="/orders.html">Orders</a></li>
           <li><a href="/reports.html">Reports</a></li>
+          <button id="logoutButton">Logout</button>
+
+<script>
+document.getElementById("logoutButton").addEventListener("click", async () => {
+  try {
+    const res = await fetch("/api/logout", {
+      method: "POST",
+      credentials: "include"
+    });
+    if (res.ok) {
+      // clear the client‑side flag
+      sessionStorage.removeItem("logged_in");
+      window.location.href = "/login.html";
+    }
+  } catch (err) {
+    console.error("Logout failed", err);
+  }
+});
+</script>
         </ul>
       </nav>
     </aside>
@@ -34,6 +52,8 @@ window.onload = function() {
         <h1>Dashboard</h1>
         <input type="text" placeholder="Search..." class="search" />
       </header>
+
+      
 
       <section class="cards">
         <div class="card">

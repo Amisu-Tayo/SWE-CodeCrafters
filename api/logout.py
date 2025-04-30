@@ -1,10 +1,10 @@
-# backend/logout.py
-from flask import Flask, make_response
+import os
+from flask import Flask, session, jsonify
 
 app = Flask(__name__)
+app.secret_key = os.environ["FLASK_SECRET_KEY"]
 
-@app.route("/", methods=["POST", "GET"])
+@app.route("/api/logout", methods=["POST"])
 def logout():
-    # Since we’re stateless, simply return a success message.
-    # front end will clear sessionStorage/localStorage as needed.
-    return make_response("Logged out", 200)
+    session.clear()
+    return jsonify(success=True, message="Logged out"), 200
