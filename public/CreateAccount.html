@@ -4,10 +4,16 @@
   <title>Create Account</title>
   <link rel="stylesheet" href="/css/login.css">
 </head>
+
+<script>
+  window.addEventListener('DOMContentLoaded',()=>{
+    document.querySelectorAll('input[type="text"], input[type="password"]').forEach(i=> i.value='');
+  });
+  </script>
 <body>
   <div class="login-container">
     <h1>Create Your Account</h1>
-    <form id="regForm">
+    <form id="regForm", autocomplete="off">
       <input type="text" id="uname" placeholder="Username" required />
       <p id="p1"></p>
 
