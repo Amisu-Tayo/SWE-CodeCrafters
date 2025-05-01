@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Inventory – Fabric Inventory Management</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <!-- Custom Styles -->
+  <style>
+    * { margin: 0; padding: 0; font-family: sans-serif; }
+    html, body { height: 100%; background-color: #b49a9a; }
+    /* Navbar */
+    .navbar { background-color: #009688 !important; }
+    .navbar-nav { display: flex; }
+    .navbar-nav li { list-style: none; position: relative; margin: 0 15px; }
+    .navbar-nav li a { text-decoration: none; color: #fff; text-transform: uppercase; font-weight: bold; font-size: 14px; padding-bottom: 5px; transition: color 0.3s ease-in-out; }
+    .navbar-nav li::after { content: ''; height: 3px; width: 0; background: #009688; position: absolute; left: 0; bottom: -5px; transition: width 0.5s ease-in-out; }
+    .navbar-nav li:hover::after { width: 100%; }
+    .navbar-nav li:hover a { color: #00796b !important; }
+    /* Table styling */
+    .inventory-table th, .inventory-table td { text-align: center; vertical-align: middle; }
+    .inventory-table tbody tr:nth-child(odd) { background-color: rgba(240,240,240,0.7); }
+    /* Action buttons */
+    .btn-action { border-radius: 20px; padding: 5px 10px; font-size: 0.9rem; }
+    /* Add Fabric Card */
+    .card { border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background-color: rgba(240,240,240,0.9); }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand text-white" href="#">FIMS Inventory</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li><a class="nav-link text-white" href="/dashboard.html">Dashboard</a></li>
+          <li><a class="nav-link text-white" href="/orders.html">Orders</a></li>
+          <li><a class="nav-link text-white" href="/reports.html">Reports</a></li>
+          <li><button id="logoutButton"><span></span>Logout</button></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container my-5">
+    <h2 class="mb-4 text-dark">Inventory</h2>
+    <!-- Add Fabric Button -->
+    <div class="mb-4">
+      <button id="addFabricBtn" class="btn btn-action btn-primary">Add New Fabric</button>
+    </div>
+
+    <!-- Inventory Table -->
+    <div class="table-responsive">
+      <table class="table inventory-table">
+        <thead class="table-secondary">
+          <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Color</th>
+            <th>Quantity</th>
+            <th>Price/Unit</th>
+            <th>Restock Threshold</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="inventoryBody">
+          <!-- rows injected by JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script>
+    document.getElementById('logoutButton').addEventListener('click', async () => {
+      await fetch('/api/logout', { method: 'POST', credentials: 'include' });
+      location.replace('/login.html');
+    });
+
+    document.getElementById('addFabricBtn').addEventListener('click', () => {
+      // TODO: show add-fabric form or navigate to add page
+      alert('Add Fabric functionality coming soon!');
+    });
+
+    (async () => {
+      // TODO: fetch /api/inventory and render rows in #inventoryBody
+    })();
+  </script>
+</body>
+</html>
