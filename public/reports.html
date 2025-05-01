@@ -1,6 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <style>body { visibility: hidden; }</style>
+    <script>
+        window.addEventListener('DOMContentLoaded', async () => {
+          try {
+            const res = await fetch('/api/check_session', {
+              credentials: 'include'   // send the session cookie
+            });
+            if (!res.ok) throw new Error('not ok');
+            const { logged_in } = await res.json();
+            if (!logged_in) throw new Error('not logged in');
+          } catch (e) {
+            // if anything goes wrong, kick them back to login
+            window.location.replace('/login.html');
+          }
+        });
+      </script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Reports – Fabric Inventory Management</title>
