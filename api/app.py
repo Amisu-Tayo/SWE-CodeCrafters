@@ -13,10 +13,14 @@ from datetime import timedelta
 dotenv_path = os.path.join(os.path.dirname(__file__), '..', '.env')
 load_dotenv(dotenv_path)
 
-app = Flask(__name__)
+# Initialize Flask app
+global app
+t_app = Flask(__name__)
+app = t_app  # alias for consistency
 app.secret_key = os.getenv('FLASK_SECRET_KEY')
-CORS(app)  # Enable CORS for the entire app
 
+# Enable CORS and allow credentials
+CORS(app, supports_credentials=True)
 # Make sessions permanent so we can apply a lifetime
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=10)
 
@@ -33,6 +37,11 @@ def login_required(f):
             return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
+
+# Endpoint to check session status
+def check_session():
+    return jsonify(logged_in=bool(session.get('logged_in'))), 200
+app.add_url_rule('/api/check_session', 'check_session', check_session, methods=['GET'])
 
 # Route to serve static files from the frontend folder (CSS, images, etc.)
 @app.route("/public/<path:filename>")
@@ -57,8 +66,8 @@ def test_db():
     except Exception as e:
         return jsonify({"success": False, "message": f"Database connection failed: {str(e)}"}), 500
 
-# Login route: handle GET and POST
-@app.route("/login", methods=["GET", "POST"])
+# Login route
+@app.route("/login", methods=["POST"])
 def login():
      data = request.json
      username = data.get("username")
