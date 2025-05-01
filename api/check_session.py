@@ -6,6 +6,6 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
-@app.route("/", methods=["GET"])
+@app.route("/api/check_session", methods=["GET"])
 def check_session():
     return jsonify(logged_in=bool(session.get("logged_in"))), 200
