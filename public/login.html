@@ -33,6 +33,7 @@
       try {
         const res = await fetch("/api/login", {
           method: "POST",
+          credentials: "include",              // ← send/receive cookies
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, password })
         });
