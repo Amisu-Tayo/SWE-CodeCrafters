@@ -15,7 +15,7 @@
       });
       // if 401/404 or {logged_in:false}, kick back to login
       if (!res.ok || !(await res.json()).logged_in) {
-        location.replace('/public/login.html');
+        location.replace('/login.html');
       }
     })();
   </script>
