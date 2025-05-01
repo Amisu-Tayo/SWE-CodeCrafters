@@ -4,78 +4,172 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard – Fabric Inventory Management</title>
-  <link rel="stylesheet" href="/style.css" />
-
-  <script>
-  (async () => {
-    // SESSION CHECK — this hits /api/check_session (and refreshes the Flask session expiry)
-    try {
-      const res = await fetch('/api/check_session', { credentials: 'include' });
-      const { logged_in } = await res.json();
-      if (!logged_in) throw new Error();
-    } catch {
-      return location.replace('/login.html');
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <!-- Custom Styles -->
+  <style>
+    /* Reset and Base Styles */
+    * { margin: 0; padding: 0; font-family: sans-serif; }
+    html, body {
+      height: 100%;
+      background-color: #b49a9a;
     }
-
-    // IDLE TIMEOUT (10 min)
-    let idleTimer;
-    const logoutNow = async () => {
-      await fetch('/api/logout', { method: 'POST', credentials: 'include' });
-      location.replace('/login.html');
-    };
-    const resetIdle = () => {
-      clearTimeout(idleTimer);
-      idleTimer = setTimeout(logoutNow, 10 * 60 * 1000);
-    };
-    ['load','mousemove','mousedown','click','scroll','keypress','touchstart']
-      .forEach(evt => window.addEventListener(evt, resetIdle));
-    resetIdle();
-  })();
-  </script>
+    /* Navbar Overrides + Underline Effect */
+    .navbar { background-color: #009688 !important; }
+    .navbar-nav { display: flex; }
+    .navbar-nav li { list-style: none; position: relative; margin: 0 15px; }
+    .navbar-nav li a { text-decoration: none; color: #fff; text-transform: uppercase; font-weight: bold; font-size: 14px; padding-bottom: 5px; transition: color 0.3s ease-in-out; }
+    .navbar-nav li::after {
+      content: '';
+      height: 3px;
+      width: 0;
+      background: #009688;
+      position: absolute;
+      left: 0;
+      bottom: -5px;
+      transition: width 0.5s ease-in-out;
+    }
+    .navbar-nav li:hover::after { width: 100%; }
+    .navbar-nav li:hover a { color: #00796b; }
+    /* Card Styling */
+    .card {
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      background-color: rgba(240,240,240,0.9);
+    }
+    .card .card-title { color: #333; }
+    .card-text { font-size: 2rem; font-weight: bold; color: #333; }
+    /* Logout Button Animation */
+    #logoutButton {
+      position: relative;
+      overflow: hidden;
+      border-radius: 25px;
+      border: 2px solid #009688;
+      background: transparent;
+      color: #fff;
+      padding: 8px 16px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+    #logoutButton span {
+      background: #009688;
+      height: 100%;
+      width: 0;
+      border-radius: 25px;
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      z-index: -1;
+      transition: width 0.5s ease;
+    }
+    #logoutButton:hover span { width: 100%; }
+    #logoutButton:hover { color: white; border: none; }
+    /* Suggestions Panel */
+    #suggestions .list-group-item {
+      background-color: rgba(240,240,240,0.9);
+      border: none;
+      margin-bottom: 5px;
+      border-radius: 5px;
+      color: #333;
+    }
+    /* Responsive */
+    @media (max-width: 768px) {
+      .navbar-nav { flex-direction: column; }
+      .navbar-nav li { margin: 10px 0; }
+    }
+  </style>
 </head>
 <body>
-  <div class="dashboard">
-    <aside class="sidebar">
-      <h2 class="logo">FIMS</h2>
-      <nav>
-        <ul>
-          <li><a href="/inventory.html">Inventory</a></li>
-          <li><a href="/orders.html">Orders</a></li>
-          <li><a href="/reports.html">Reports</a></li>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand text-white" href="#">FIMS Dashboard</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li><a class="nav-link" href="/inventory.html">Inventory</a></li>
+          <li><a class="nav-link" href="/orders.html">Orders</a></li>
+          <li><a class="nav-link" href="/reports.html">Reports</a></li>
+          <li><button id="logoutButton"><span></span>Logout</button></li>
         </ul>
-        <button id="logoutButton">Logout</button>
-      </nav>
-    </aside>
+      </div>
+    </div>
+  </nav>
 
-    <main class="main">
-      <header class="header"><h1>Dashboard</h1></header>
-      <section class="cards">
-        <div class="card"><h3>Total SKUs</h3><p id="total-skus">–</p></div>
-        <div class="card"><h3>Total Value</h3><p id="total-value">–</p></div>
-        <div class="card"><h3>Low Stock</h3><p id="low-stock">–</p></div>
-        <div class="card"><h3>Pending Orders</h3><p id="pending-orders">–</p></div>
-      </section>
-    </main>
+  <div class="container my-5">
+    <!-- Summary Cards -->
+    <div class="row g-4">
+      <div class="col-md-3">
+        <div class="card h-100 text-center">
+          <div class="card-body">
+            <h5 class="card-title">Total SKUs</h5>
+            <p id="total-skus" class="card-text">—</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card h-100 text-center">
+          <div class="card-body">
+            <h5 class="card-title">Total Value</h5>
+            <p id="total-value" class="card-text">—</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card h-100 text-center">
+          <div class="card-body">
+            <h5 class="card-title">Low Stock</h5>
+            <p id="low-stock" class="card-text">—</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card h-100 text-center">
+          <div class="card-body">
+            <h5 class="card-title">Pending Orders</h5>
+            <p id="pending-orders" class="card-text">—</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Suggestions Panel -->
+    <div class="mt-5">
+      <h3 style="color:#333; margin-bottom:15px;">AI Suggestions</h3>
+      <div id="suggestions" class="list-group"></div>
+    </div>
   </div>
 
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <!-- Dashboard Script -->
   <script>
-  // MANUAL LOGOUT
-  document.getElementById('logoutButton').addEventListener('click', async () => {
-    await fetch('/api/logout', { method: 'POST', credentials: 'include' });
-    location.replace('/login.html');
-  });
+    document.getElementById('logoutButton').addEventListener('click', async () => {
+      await fetch('/api/logout', { method: 'POST', credentials: 'include' });
+      location.replace('/login.html');
+    });
 
-  // LOAD SUMMARY DATA
-  (async () => {
-    const inv = await fetch('/inventory', { credentials: 'include' }).then(r=>r.json());
-    document.getElementById('total-skus').innerText = inv.length;
-    const totalVal = inv.reduce((sum,i)=>sum + i.quantity * parseFloat(i.price_per_unit),0);
-    document.getElementById('total-value').innerText = `$${totalVal.toFixed(2)}`;
-    document.getElementById('low-stock').innerText = inv.filter(i=>i.quantity < i.restock_threshold).length;
+    (async () => {
+      const inv = await fetch('/api/inventory', { credentials: 'include' }).then(r => r.json());
+      document.getElementById('total-skus').innerText = inv.length;
+      const totalVal = inv.reduce((s, i) => s + i.quantity * parseFloat(i.price_per_unit), 0);
+      document.getElementById('total-value').innerText = `$${totalVal.toFixed(2)}`;
+      document.getElementById('low-stock').innerText = inv.filter(i => i.quantity < i.restock_threshold).length;
 
-    const orders = await fetch('/orders', { credentials: 'include' }).then(r=>r.json());
-    document.getElementById('pending-orders').innerText = orders.filter(o=>o.status==='Pending').length;
-  })();
+      const orders = await fetch('/api/orders', { credentials: 'include' }).then(r => r.json());
+      document.getElementById('pending-orders').innerText = orders.filter(o => o.status === 'Pending').length;
+
+      const sugg = await fetch('/api/suggestions', { credentials: 'include' }).then(r => r.json());
+      const container = document.getElementById('suggestions');
+      sugg.forEach(text => {
+        const el = document.createElement('div');
+        el.className = 'list-group-item';
+        el.innerText = `🤖 ${text}`;
+        container.appendChild(el);
+      });
+    })();
   </script>
 </body>
 </html>
