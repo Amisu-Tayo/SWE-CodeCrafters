@@ -1,5 +1,11 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
+Globals:
+  Api:
+    Cors:
+      AllowMethods: '''OPTIONS,GET,POST'''
+      AllowHeaders: '''Content-Type,Authorization'''
+      AllowOrigin: '''https://fims.store'''
 Parameters:
   DBHostParam:
     Type: String
@@ -38,4 +44,9 @@ Resources:
           Properties:
             Path: /api/fimai
             Method: get
+        FimaiChatApi:
+          Type: Api
+          Properties:
+            Path: /api/fimai/chat
+            Method: post
       ImageUri: fimaifunction:latest
