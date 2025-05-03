@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Parameters:
+  DBHostParam:
+    Type: String
+  DBUserParam:
+    Type: String
+  DBPassParam:
+    Type: String
+  DBNameParam:
+    Type: String
+Resources:
+  FimaiFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      DockerContext: /Users/tayo/Documents/School_Stuff/Tayo/Spring 2025 Classes/Software
+        Engineering/SWE-CodeCrafters/lambda_src
+      Dockerfile: Dockerfile.lambda
+      SamResourceId: FimaiFunction
+    Properties:
+      PackageType: Image
+      ImageConfig:
+        Command:
+        - api.fimai.handler
+      Environment:
+        Variables:
+          DB_HOST:
+            Ref: DBHostParam
+          DB_USER:
+            Ref: DBUserParam
+          DB_PASS:
+            Ref: DBPassParam
+          DB_NAME:
+            Ref: DBNameParam
+      Events:
+        FimaiApi:
+          Type: Api
+          Properties:
+            Path: /api/fimai
+            Method: get
+      ImageUri: fimaifunction:latest
