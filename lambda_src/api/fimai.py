@@ -1,7 +1,7 @@
 import os
 import pickle
 from flask import Flask, jsonify, request
-from mangum import Mangum
+import aws_serverless_wsgi
 from api.db_config import get_connection
 
 app = Flask(__name__)
@@ -163,5 +163,8 @@ def chat():
     return jsonify({"response": answer})
 
 # Mangum adapter
-handler = Mangum(app)
+def handler(event, context):
+    # Set the environment variable for the AWS region
+    #os.environ["AWS_REGION"] = os.getenv("AWS_REGION", "us-east-1")
+    return aws_serverless_wsgi.handle_request(app, event, context)
 
