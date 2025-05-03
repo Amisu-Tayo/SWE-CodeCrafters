@@ -23,29 +23,175 @@
     })();
   </script>
 
+  <!-- Custom Styles -->
   <style>
-    /* ... your existing styles ... */
+    /* Reset & Base */
+    * { margin: 0; padding: 0; font-family: sans-serif; }
+    body {
+      min-height: 100vh;
+      background-image: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('/images/fabric.jpg');
+      background-size: cover;
+      background-position: center;
+      color: #fff;
+    }
+    /* Navbar */
+    .navbar {
+      width: 85%;
+      margin: auto;
+      padding: 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: transparent;
+    }
+    .navbar-nav { display: flex; }
+    .navbar-nav li { list-style: none; margin: 0 15px; position: relative; }
+    .navbar-nav li a {
+      text-decoration: none;
+      color: #fff;
+      text-transform: uppercase;
+      font-weight: bold;
+      font-size: 14px;
+      padding-bottom: 5px;
+      transition: color 0.3s;
+    }
+    .navbar-nav li::after {
+      content: '';
+      height: 3px;
+      width: 0;
+      background: #009688;
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      transition: width 0.5s;
+    }
+    .navbar-nav li:hover::after { width: 100%; }
+    .navbar-nav li:hover a { color: #009688; }
+
+    /* Cards */
+    .card {
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      background-color: rgba(255,255,255,0.1);
+      border: none;
+      transition: transform 0.3s;
+    }
+    .card:hover { transform: translateY(-5px); }
+    .card-title { color: #fff; }
+    .card-text { font-size: 1.5rem; font-weight: bold; color: #e0f2f1; }
+
+    /* Suggestions Panel */
+    #suggestions .list-group-item {
+      background-color: rgba(255,255,255,0.1);
+      border: none;
+      margin-bottom: 5px;
+      border-radius: 5px;
+      color: #fff;
+      transition: background 0.3s;
+    }
+    #suggestions .list-group-item:hover {
+      background-color: rgba(0,150,136,0.2);
+    }
+
+    /* FIMAI Chat Widget */
+    #fimai-chat-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #e0f2f1;
+      color: #009688;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      cursor: pointer;
+      font-size: 28px;
+      text-align: center;
+      line-height: 60px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: background 0.3s;
+    }
+    #fimai-chat-button:hover { background-color: #b2dfdb; }
+    #fimai-chat-panel {
+      display: none;
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      width: 300px;
+      max-height: 400px;
+      background: rgba(255,255,255,0.95);
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      overflow: hidden;
+      flex-direction: column;
+      z-index: 1000;
+      color: #333;
+    }
+    #fimai-chat-panel.visible { display: flex; }
+    #fimai-chat-panel .chat-header {
+      background-color: #009688;
+      color: #fff;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #fimai-chat-panel .chat-messages {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      background: #fafafa;
+    }
+    #fimai-chat-panel .chat-form {
+      display: flex;
+      border-top: 1px solid #ddd;
+      background: #fff;
+    }
+    #fimai-chat-panel .chat-form input {
+      flex: 1;
+      border: none;
+      padding: 10px;
+    }
+    #fimai-chat-panel .chat-form button {
+      background: #009688;
+      border: none;
+      color: #fff;
+      padding: 0 15px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg">
-    <!-- ... navbar code ... -->
+    <div class="container-fluid">
+      <a class="navbar-brand text-white" href="#">FIMS Dashboard</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li><a class="nav-link" href="/inventory.html">Inventory</a></li>
+          <li><a class="nav-link" href="/orders.html">Orders</a></li>
+          <li><a class="nav-link" href="/reports.html">Reports</a></li>
+          <li><button id="logoutButton" class="btn login-button"><span></span>Logout</button></li>
+        </ul>
+      </div>
+    </div>
   </nav>
 
   <div class="container my-5">
     <!-- Summary Cards -->
     <div class="row g-4">
-      <!-- Total Items (breakdown list) -->
+      <!-- Total Items -->
       <div class="col-md-3">
-        <div class="card h-100">
+        <div class="card h-100 text-center">
           <div class="card-body">
             <h5 class="card-title">Total Items</h5>
             <p id="total-items" class="card-text">Loading...</p>
           </div>
         </div>
       </div>
-
       <!-- Pending Orders -->
       <div class="col-md-3">
         <div class="card h-100 text-center">
@@ -55,7 +201,6 @@
           </div>
         </div>
       </div>
-
       <!-- Low Stock -->
       <div class="col-md-3">
         <div class="card h-100 text-center">
@@ -65,7 +210,6 @@
           </div>
         </div>
       </div>
-
       <!-- Monthly Usage -->
       <div class="col-md-3">
         <div class="card h-100 text-center">
@@ -85,12 +229,26 @@
   </div>
 
   <!-- FIMAI Chat Widget -->
-  <!-- ... existing chat HTML ... -->
+  <button id="fimai-chat-button">🤖</button>
+  <div id="fimai-chat-panel">
+    <div class="chat-header">
+      <span>FIMAI</span>
+      <button id="closeChat" style="background:none;border:none;color:#fff;font-size:20px;">×</button>
+    </div>
+    <div id="chatMessages" class="chat-messages"></div>
+    <form id="chatForm" class="chat-form">
+      <input id="chatInput" type="text" placeholder="Ask me..." autocomplete="off" />
+      <button type="submit">Send</button>
+    </form>
+  </div>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
   <!-- Dashboard Script -->
   <script>
+    const FIMAI_API_URL      = 'https://<YOUR-API-ID>.execute-api.us-east-1.amazonaws.com/Prod/api/fimai';
+    const FIMAI_CHAT_API_URL = 'https://<YOUR-API-ID>.execute-api.us-east-1.amazonaws.com/Prod/api/fimai/chat';
+
     document.getElementById('logoutButton').addEventListener('click', async () => {
       await fetch('/api/logout', { method: 'POST', credentials: 'include' });
       location.replace('/login.html');
@@ -106,8 +264,7 @@
         acc[type] = (acc[type] || 0) + item.quantity;
         return acc;
       }, {});
-      const totalEl = document.getElementById('total-items');
-      totalEl.innerHTML = Object.entries(breakdown)
+      document.getElementById('total-items').innerHTML = Object.entries(breakdown)
         .map(([type, qty]) => `${type}: ${qty}`)
         .join('<br>');
 
@@ -118,7 +275,7 @@
       // 3) Low Stock
       document.getElementById('low-stock').innerText = inv.filter(i => i.quantity < i.restock_threshold).length;
 
-      // 4) Monthly Usage from sales (last 30 days removals)
+      // 4) Monthly Usage
       const usage = await fetch('/api/usage', { credentials: 'include' })
         .then(r => r.json())
         .then(d => d.monthly_usage);
@@ -135,7 +292,32 @@
       });
     })();
 
-    // Chat JS...
+    // Chat Logic
+    const chatButton   = document.getElementById('fimai-chat-button');
+    const chatPanel    = document.getElementById('fimai-chat-panel');
+    const closeChat    = document.getElementById('closeChat');
+    const chatForm     = document.getElementById('chatForm');
+    const chatInput    = document.getElementById('chatInput');
+    const chatMessages = document.getElementById('chatMessages');
+
+    chatButton.onclick = () => chatPanel.classList.add('visible');
+    closeChat.onclick  = () => chatPanel.classList.remove('visible');
+    chatForm.onsubmit = async e => {
+      e.preventDefault();
+      const question = chatInput.value.trim();
+      if (!question) return;
+      const userEl = document.createElement('div');
+      userEl.style.textAlign = 'right'; userEl.style.fontWeight = 'bold';
+      userEl.innerText = question; chatMessages.appendChild(userEl);
+      chatInput.value = '';
+      const res = await fetch(FIMAI_CHAT_API_URL, {
+        method: 'POST', credentials: 'include', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ message: question })
+      });
+      const { response } = await res.json();
+      const botEl = document.createElement('div'); botEl.innerText = `🤖 ${response}`; chatMessages.appendChild(botEl);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    };
   </script>
 </body>
 </html>
