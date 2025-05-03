@@ -50,3 +50,12 @@ Resources:
             Path: /api/fimai/chat
             Method: post
       ImageUri: fimaifunction:latest
+Outputs:
+  FimaiApiUrl:
+    Description: Invoke URL for FIMai endpoint
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/fimai
+  FimaiChatUrl:
+    Description: Invoke URL for FIMai chat endpoint
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/fimai/chat

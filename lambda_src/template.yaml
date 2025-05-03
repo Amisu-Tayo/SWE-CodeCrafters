@@ -49,4 +49,11 @@ Resources:
           Properties:
             Path: /api/fimai/chat
             Method: post
-           
+  
+Outputs:
+  FimaiApiUrl:
+    Description: "Invoke URL for FIMai endpoint"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/fimai"
+  FimaiChatUrl:
+    Description: "Invoke URL for FIMai chat endpoint"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/fimai/chat"
