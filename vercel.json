@@ -1,0 +1,19 @@
+{
+    "version": 2,
+    "builds": [
+      { "src": "api/index.py",      "use": "@vercel/python" },
+      { "src": "api/*.py",          "use": "@vercel/python" }
+    ],
+    "routes": [
+
+      { "src": "/api/inventory$",   "dest": "api/index.py" },
+      { "src": "/api/orders$",      "dest": "api/index.py" },
+      { "src": "/api/usage$",       "dest": "api/index.py" },
+      { "src": "/api/reports$",     "dest": "api/index.py" },
+      { "src": "/api/inventory/\\d+$", "dest": "api/index.py" },
+      { "src": "/api/orders/\\d+$",    "dest": "api/index.py" },
+
+  
+      { "src": "/api/(.*)",         "dest": "/api/$1.py" }
+    ]
+  }
