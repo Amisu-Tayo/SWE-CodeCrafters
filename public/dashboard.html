@@ -46,6 +46,40 @@
     .card-text { font-size: 1.5rem; font-weight: bold; color: #e0f2f1; }
     #suggestions .list-group-item { background-color: rgba(255,255,255,0.1); border: none; margin-bottom: 5px; border-radius: 5px; color: #fff; transition: background 0.3s; }
     #suggestions .list-group-item:hover { background-color: rgba(0,150,136,0.2); }
+
+    /* Updated Logout Button Styles */
+    #logoutButton {
+      background-color: #009688;
+      color: #fff;
+      border: 2px solid #00796b;
+      border-radius: 25px;
+      padding: 8px 16px;
+      font-weight: bold;
+      position: relative;
+      overflow: hidden;
+      transition: background-color 0.3s, border 0.3s;
+    }
+    #logoutButton:hover {
+      background-color: #00796b;
+      color: #fff;
+      border: none;
+    }
+    #logoutButton span {
+      /* You can keep or remove the span animation if desired */
+      background: #00796b;
+      height: 100%;
+      width: 0;
+      border-radius: 25px;
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      z-index: -1;
+      transition: width 0.5s;
+    }
+    #logoutButton:hover span {
+      width: 100%;
+    }
+
     #fimai-chat-button { position: fixed; bottom: 20px; right: 20px; background-color: #e0f2f1; color: #009688; border: none; border-radius: 50%; width: 60px; height: 60px; cursor: pointer; font-size: 28px; text-align: center; line-height: 60px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: background 0.3s; }
     #fimai-chat-button:hover { background-color: #b2dfdb; }
     #fimai-chat-panel { display: none; position: fixed; bottom: 90px; right: 20px; width: 300px; max-height: 400px; background: rgba(255,255,255,0.95); border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); overflow: hidden; flex-direction: column; z-index: 1000; color: #333; }
@@ -58,6 +92,7 @@
   </style>
 </head>
 <body>
+  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
       <a class="navbar-brand text-white" href="#">FIMS Dashboard</a>
@@ -69,54 +104,29 @@
           <li><a class="nav-link" href="/inventory.html">Inventory</a></li>
           <li><a class="nav-link" href="/orders.html">Orders</a></li>
           <li><a class="nav-link" href="/reports.html">Reports</a></li>
-          <li><button id="logoutButton" class="btn login-button"><span></span>Logout</button></li>
+          <li><button id="logoutButton"><span></span>Logout</button></li>
         </ul>
       </div>
     </div>
   </nav>
 
   <div class="container my-5">
+    <!-- Summary Cards -->
     <div class="row g-4">
-      <div class="col-md-3">
-        <div class="card h-100 text-center">
-          <div class="card-body">
-            <h5 class="card-title">Total Items</h5>
-            <p id="total-items" class="card-text">Loading...</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card h-100 text-center">
-          <div class="card-body">
-            <h5 class="card-title">Pending Orders</h5>
-            <p id="pending-orders" class="card-text">—</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card h-100 text-center">
-          <div class="card-body">
-            <h5 class="card-title">Low Stock</h5>
-            <p id="low-stock" class="card-text">—</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card h-100 text-center">
-          <div class="card-body">
-            <h5 class="card-title">Monthly Usage</h5>
-            <p id="monthly-usage" class="card-text">—</p>
-          </div>
-        </div>
-      </div>
+      <div class="col-md-3"><div class="card h-100 text-center"><div class="card-body"><h5 class="card-title">Total Items</h5><p id="total-items" class="card-text">Loading...</p></div></div></div>
+      <div class="col-md-3"><div class="card h-100 text-center"><div class="card-body"><h5 class="card-title">Pending Orders</h5><p id="pending-orders" class="card-text">—</p></div></div></div>
+      <div class="col-md-3"><div class="card h-100 text-center"><div class="card-body"><h5 class="card-title">Low Stock</h5><p id="low-stock" class="card-text">—</p></div></div></div>
+      <div class="col-md-3"><div class="card h-100 text-center"><div class="card-body"><h5 class="card-title">Monthly Usage</h5><p id="monthly-usage" class="card-text">—</p></div></div></div>
     </div>
 
+    <!-- Suggestions Panel -->
     <div class="mt-5">
       <h3>AI Suggestions</h3>
       <div id="suggestions" class="list-group"></div>
     </div>
   </div>
 
+  <!-- FIMAI Chat Widget -->
   <button id="fimai-chat-button">🤖</button>
   <div id="fimai-chat-panel">
     <div class="chat-header">
@@ -130,7 +140,9 @@
     </form>
   </div>
 
+  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <!-- Dashboard Script -->
   <script>
     const FIMAI_API_URL      = 'https://pdixzb3lxk.execute-api.us-east-1.amazonaws.com/Prod/api/fimai';
     const FIMAI_CHAT_API_URL = 'https://pdixzb3lxk.execute-api.us-east-1.amazonaws.com/Prod/api/fimai/chat';
