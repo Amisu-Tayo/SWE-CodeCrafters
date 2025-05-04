@@ -1,33 +1,28 @@
 import os
 import pickle
 from flask import Flask, jsonify, request
-import aws_serverless_wsgi
+import awsgi                       # AWS WSGI adapter for Lambda
 from api.db_config import get_connection
 
 app = Flask(__name__)
 
-# Lazy load Prophet models to avoid long cold-start times
+# Lazy-load Prophet models
 MODELS = {}
 
 def load_models():
-    """
-    Load all .pkl Prophet model files into the global MODELS dict.
-    Called on first request to defer expensive I/O.
-    """
+    """Load all .pkl Prophet model files to MODELS dict."""
     model_dir = os.path.join(os.getcwd(), "models")
     for fn in os.listdir(model_dir):
         if fn.endswith(".pkl"):
             key = fn[:-4].strip().lower()
-            path = os.path.join(model_dir, fn)
             try:
-                with open(path, "rb") as f:
+                with open(os.path.join(model_dir, fn), "rb") as f:
                     MODELS[key] = pickle.load(f)
             except Exception as e:
-                print(f"Error loading model {fn}: {e}")
+                print(f"Error loading {fn}: {e}")
 
 @app.route("/api/fimai", methods=["GET"])
 def fimai():
-    # Load models on first invocation
     if not MODELS:
         load_models()
 
@@ -39,37 +34,24 @@ def fimai():
 
     out = []
     for row in inv:
-        ft = row["fabric_type"].strip().lower()
-        qty, thr = row["quantity"], row["restock_threshold"]
+        ft = row['fabric_type'].strip().lower()
+        qty, thr = row['quantity'], row['restock_threshold']
         model = MODELS.get(ft)
         if model:
-            # Forecast next 12 months
-            future = model.make_future_dataframe(periods=12, freq="M")
-            forecast = model.predict(future)
-            next_year = forecast.iloc[-12:]
-            peak_idx = next_year['yhat'].idxmax()
-            peak_row = next_year.loc[peak_idx]
-            peak_month = peak_row['ds'].strftime('%B')
-            peak_val = int(peak_row['yhat'])
+            future = model.make_future_dataframe(periods=12, freq='M')
+            forecast = model.predict(future).iloc[-12:]
+            peak = forecast.loc[forecast['yhat'].idxmax()]
+            peak_month = peak['ds'].strftime('%B')
+            peak_val = int(peak['yhat'])
 
-            # Tailored advice
             if qty < thr:
-                advice = (
-                    f"You're below your restock threshold ({thr}). "
-                    f"Consider reordering before {peak_month}."
-                )
+                advice = f"Below restock threshold ({thr}); reorder before {peak_month}."
             elif qty > peak_val:
-                advice = (
-                    f"You have more stock ({qty}) than the forecasted peak ({peak_val}). "
-                    "You could cancel or reduce upcoming restock."
-                )
+                advice = f"Stock ({qty}) exceeds peak forecast ({peak_val}); consider reducing restock."
             else:
-                advice = f"Your stock should hold until around {peak_month}."
+                advice = f"Stock should hold until around {peak_month}."
 
-            msg = (
-                f"{ft.title()} typically peaks in {peak_month}. "
-                f"You currently have {qty} yards. {advice}"
-            )
+            msg = f"{ft.title()} peaks in {peak_month}. You have {qty} yards. {advice}"
         else:
             msg = f"No model for {ft}. Monitor this SKU closely."
         out.append(msg)
@@ -78,93 +60,56 @@ def fimai():
 
 @app.route("/api/fimai/chat", methods=["POST"])
 def chat():
-    # Ensure models loaded for forecast queries
     if not MODELS:
         load_models()
 
-    data = request.get_json() or {}
-    question = data.get("message", "").lower()
+    q = (request.get_json() or {}).get('message', '').lower()
 
-    # 1) Quantity lookup: "how many ... <fabric>"
-    if "how many" in question:
-        for fabric in MODELS.keys():
-            if fabric in question:
-                conn = get_connection()
-                cur = conn.cursor()
-                cur.execute(
-                    "SELECT quantity FROM fabric_inventory WHERE LOWER(fabric_type)=%s",
-                    (fabric,)  
-                )
-                row = cur.fetchone()
-                conn.close()
+    # 1) Quantity check
+    if 'how many' in q:
+        for ft in MODELS:
+            if ft in q:
+                conn = get_connection(); cur = conn.cursor()
+                cur.execute("SELECT quantity FROM fabric_inventory WHERE LOWER(fabric_type)=%s", (ft,))
+                row = cur.fetchone(); conn.close()
                 if row:
-                    qty = row[0]
-                    return jsonify({"response": f"You have {qty} yards of {fabric} in stock."})
-                else:
-                    return jsonify({"response": f"I don't see any record for {fabric}."})
+                    return jsonify({'response': f"You have {row[0]} yards of {ft}."})
+                return jsonify({'response': f"No record for {ft}."})
 
-    # 2) Forecast request: "when should I reorder <fabric>?"
-    for fabric in MODELS.keys():
-        if fabric in question:
-            model = MODELS[fabric]
-            future = model.make_future_dataframe(periods=1, freq="M")
-            forecast = model.predict(future)
-            yhat = int(forecast.iloc[-1]["yhat"])
-            month = forecast.iloc[-1]["ds"].strftime("%B")
+    # 2) Forecast check
+    for ft in MODELS:
+        if ft in q:
+            model = MODELS[ft]
+            fut = model.make_future_dataframe(periods=1, freq='M')
+            yhat = int(model.predict(fut).iloc[-1]['yhat'])
+            month = model.predict(fut).iloc[-1]['ds'].strftime('%B')
+            conn = get_connection(); cur = conn.cursor()
+            cur.execute("SELECT quantity FROM fabric_inventory WHERE LOWER(fabric_type)=%s", (ft,))
+            row = cur.fetchone(); conn.close()
+            qty = row[0] if row else 0
+            resp = f"In {month}, ~{yhat} yards of {ft}. " + ("Reorder." if yhat>qty else "Stock holds.")
+            return jsonify({'response': resp})
 
-            conn = get_connection()
-            cur = conn.cursor()
-            cur.execute(
-                "SELECT quantity FROM fabric_inventory WHERE LOWER(fabric_type)=%s",
-                (fabric,)
-            )
-            row = cur.fetchone()
-            conn.close()
-            qty = row[0] or 0
-
-            msg = f"In {month}, you'll sell ~{yhat} yards of {fabric}. "
-            msg += "Consider reordering." if yhat > qty else "Stock should hold."
-
-            return jsonify({"response": msg})
-
-    conn = get_connection()
-    cur = conn.cursor()
-
-    # 3) Total items
-    if "total items" in question or ("how many" in question and "items" in question):
-        cur.execute("SELECT COUNT(*) FROM fabric_inventory")
-        count = cur.fetchone()[0]
-        answer = f"You have {count} items in inventory."
-
-    # 4) Low stock
-    elif "low stock" in question or "restock" in question:
+    conn = get_connection(); cur = conn.cursor()
+    if 'total items' in q or ('how many' in q and 'items' in q):
+        cur.execute("SELECT COUNT(*) FROM fabric_inventory"); cnt = cur.fetchone()[0]; answer = f"You have {cnt} items."
+    elif 'low stock' in q or 'restock' in q:
+        cur.execute("SELECT fabric_type FROM fabric_inventory WHERE quantity < restock_threshold")
+        low = [r[0] for r in cur.fetchall()]; answer = low and f"Low stock: {', '.join(low)}." or "All above."
+    elif 'usage' in q or 'sold' in q:
         cur.execute(
-            "SELECT fabric_type FROM fabric_inventory WHERE quantity < restock_threshold"
+            "SELECT SUM(quantity_changed) FROM stock_transactions WHERE transaction_type='Removal' AND transaction_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)"
         )
-        low = [r[0] for r in cur.fetchall()]
-        answer = low and f"Low stock for: {', '.join(low)}." or "All items above threshold."
-
-    # 5) Monthly usage / sales
-    elif "usage" in question or "sold" in question:
-        cur.execute(
-            """
-            SELECT SUM(quantity_changed) FROM stock_transactions
-            WHERE transaction_type='Removal'
-              AND transaction_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-            """
-        )
-        total = cur.fetchone()[0] or 0
-        answer = f"You sold {total} yards in the last 30 days."
-
+        total = cur.fetchone()[0] or 0; answer = f"Sold {total} yards in last 30 days."
     else:
-        answer = "Sorry, I don't know how to answer that yet."
+        answer = "Sorry, I don't understand."
+    conn.close(); return jsonify({'response': answer})
 
-    conn.close()
-    return jsonify({"response": answer})
+# Lambda entry point
 
-# Mangum adapter
 def handler(event, context):
-    # Set the environment variable for the AWS region
-    #os.environ["AWS_REGION"] = os.getenv("AWS_REGION", "us-east-1")
-    return aws_serverless_wsgi.handle_request(app, event, context)
+    return awsgi.response(app, event, context)
+
+
+
 
