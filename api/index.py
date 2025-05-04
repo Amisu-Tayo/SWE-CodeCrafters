@@ -1,49 +1,147 @@
-# api/index.py
-
 import os
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from api.db_config import get_connection
 
 app = Flask(__name__)
-app.secret_key = os.getenv("SESSION_SECRET", "dev-secret")  # only needed if you use sessions here
+app.secret_key = os.getenv("SESSION_SECRET", "dev-secret")
+
 
 # ── Inventory ───────────────────────────────────────────────────────
-@app.route("/api/inventory", methods=["GET"])
-def get_inventory():
+
+@app.route("/api/inventory", methods=["GET", "POST"])
+def handle_inventory():
     conn = get_connection()
     cur  = conn.cursor(dictionary=True)
-    cur.execute("""
-      SELECT fabric_id,
-             fabric_type,
-             color,
-             quantity,
-             price_per_unit,
-             restock_threshold
-        FROM fabric_inventory
-    """)
-    rows = cur.fetchall()
+
+    if request.method == "GET":
+        cur.execute("""
+          SELECT fabric_id,
+                 fabric_type,
+                 color,
+                 quantity,
+                 price_per_unit,
+                 restock_threshold
+            FROM fabric_inventory
+        """)
+        rows = cur.fetchall()
+        conn.close()
+        return jsonify(rows)
+
+    # POST → create a new inventory item
+    data = request.get_json()
+    sql = """
+      INSERT INTO fabric_inventory
+        (fabric_type, color, quantity, price_per_unit, restock_threshold)
+      VALUES (%s, %s, %s, %s, %s)
+    """
+    params = (
+      data["fabric_type"],
+      data["color"],
+      data["quantity"],
+      data["price_per_unit"],
+      data["restock_threshold"]
+    )
+    cur.execute(sql, params)
+    conn.commit()
+    new_id = cur.lastrowid
     conn.close()
-    return jsonify(rows)
+    return jsonify({ "fabric_id": new_id }), 201
+
+
+@app.route("/api/inventory/<int:fid>", methods=["PUT", "DELETE"])
+def handle_single_inventory(fid):
+    conn = get_connection()
+    cur  = conn.cursor()
+
+    if request.method == "PUT":
+        data = request.get_json()
+        sql = """
+          UPDATE fabric_inventory
+             SET fabric_type=%s,
+                 color=%s,
+                 quantity=%s,
+                 price_per_unit=%s,
+                 restock_threshold=%s
+           WHERE fabric_id=%s
+        """
+        params = (
+          data["fabric_type"],
+          data["color"],
+          data["quantity"],
+          data["price_per_unit"],
+          data["restock_threshold"],
+          fid
+        )
+        cur.execute(sql, params)
+        conn.commit()
+        conn.close()
+        return jsonify({ "ok": True })
+
+    # DELETE
+    cur.execute("DELETE FROM fabric_inventory WHERE fabric_id=%s", (fid,))
+    conn.commit()
+    conn.close()
+    return jsonify({ "ok": True })
+
 
 # ── Orders ──────────────────────────────────────────────────────────
-@app.route("/api/orders", methods=["GET"])
-def get_orders():
+
+@app.route("/api/orders", methods=["GET", "POST"])
+def handle_orders():
     conn = get_connection()
     cur  = conn.cursor(dictionary=True)
-    cur.execute("""
-      SELECT order_id,
-             supplier_id,
-             fabric_id,
-             quantity,
-             order_date,
-             status
-        FROM orders
-    """)
-    rows = cur.fetchall()
+
+    if request.method == "GET":
+        cur.execute("""
+          SELECT order_id,
+                 supplier_id,
+                 fabric_id,
+                 quantity,
+                 order_date,
+                 status
+            FROM orders
+        """)
+        rows = cur.fetchall()
+        conn.close()
+        return jsonify(rows)
+
+    # POST → create a new order
+    data = request.get_json()
+    sql = """
+      INSERT INTO orders (supplier_id, fabric_id, quantity)
+      VALUES (%s, %s, %s)
+    """
+    params = (data["supplier_id"], data["fabric_id"], data["quantity"])
+    cur.execute(sql, params)
+    conn.commit()
+    new_id = cur.lastrowid
     conn.close()
-    return jsonify(rows)
+    return jsonify({ "order_id": new_id }), 201
+
+
+@app.route("/api/orders/<int:oid>", methods=["PUT", "DELETE"])
+def handle_single_order(oid):
+    conn = get_connection()
+    cur  = conn.cursor()
+
+    if request.method == "PUT":
+        data = request.get_json()
+        # typically allow updating status only
+        cur.execute("UPDATE orders SET status=%s WHERE order_id=%s",
+                    (data["status"], oid))
+        conn.commit()
+        conn.close()
+        return jsonify({ "ok": True })
+
+    # DELETE
+    cur.execute("DELETE FROM orders WHERE order_id=%s", (oid,))
+    conn.commit()
+    conn.close()
+    return jsonify({ "ok": True })
+
 
 # ── Usage ───────────────────────────────────────────────────────────
+
 @app.route("/api/usage", methods=["GET"])
 def get_usage():
     conn = get_connection()
@@ -59,7 +157,9 @@ def get_usage():
     usage = (result['monthly_usage'] if isinstance(result, dict) else result[0]) or 0
     return jsonify(monthly_usage=usage)
 
+
 # ── Reports ─────────────────────────────────────────────────────────
+
 @app.route("/api/reports", methods=["GET"])
 def get_reports():
     conn = get_connection()
@@ -76,7 +176,9 @@ def get_reports():
     conn.close()
     return jsonify(rows)
 
+
 # ── Entry Point ─────────────────────────────────────────────────────
-# Vercel’s Python builder will detect `app` and deploy it as a single function.
+
 if __name__ == "__main__":
-    app.run()
+    # for local dev
+    app.run(debug=True)

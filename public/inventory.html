@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Inventory – Fabric Inventory Management</title>
-
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 
@@ -13,11 +12,11 @@
   <script>
     window.addEventListener('DOMContentLoaded', async () => {
       try {
-        const res = await fetch('/api/check_session', { credentials: 'include' });
+        const res = await fetch('/api/check_session',{ credentials:'include' });
         if (!res.ok) throw new Error();
         const { logged_in } = await res.json();
         if (!logged_in) throw new Error();
-        document.body.style.visibility = 'visible';
+        document.body.style.visibility='visible';
       } catch {
         window.location.replace('/login.html');
       }
@@ -26,73 +25,110 @@
 
   <!-- Custom Styles (same as dashboard) -->
   <style>
-    * { margin: 0; padding: 0; font-family: sans-serif; }
-    body {
-      min-height: 100vh;
-      background-image: linear-gradient(rgba(0,0,0,0.75),rgba(0,0,0,0.75)),url('/images/fabric.jpg');
-      background-size: cover; background-position: center; color: #fff;
+    *{margin:0;padding:0;font-family:sans-serif;}
+    body { min-height:100vh;
+      background: linear-gradient(rgba(0,0,0,0.75),rgba(0,0,0,0.75)),
+                  url('/images/fabric.jpg') center/cover no-repeat;
+      color:#fff;
     }
-    .navbar { width:85%; margin:auto; padding:20px 0; display:flex; align-items:center; justify-content:space-between; background:transparent; }
-    .navbar-nav { display:flex; }
-    .navbar-nav li { list-style:none; margin:0 15px; position:relative; }
-    .navbar-nav li a { text-decoration:none; color:#fff; text-transform:uppercase; font-weight:bold; font-size:14px; padding-bottom:5px; transition:color 0.3s; }
-    .navbar-nav li::after { content:''; height:3px; width:0; background:#009688; position:absolute; bottom:-5px; left:0; transition:width 0.5s; }
-    .navbar-nav li:hover::after { width:100%; }
-    .navbar-nav li:hover a { color:#009688; }
-    table { background-color: rgba(255,255,255,0.1); }
-    th, td { color:#e0f2f1; }
+    .navbar{width:85%;margin:auto;padding:20px 0;display:flex;align-items:center;justify-content:space-between;}
+    .navbar-nav{display:flex;}
+    .navbar-nav li{list-style:none;position:relative;margin:0 15px;}
+    .navbar-nav li a{color:#fff;text-transform:uppercase;font-weight:bold;transition:color .3s;}
+    .navbar-nav li::after{content:'';position:absolute;bottom:-5px;left:0;height:3px;width:0;background:#009688;transition:width .5s;}
+    .navbar-nav li:hover::after{width:100%;}
+    .navbar-nav li:hover a{color:#009688;}
+    table {background:rgba(255,255,255,0.1);color:#fff;}
+    th,td {vertical-align:middle;}
+    .btn-close {filter:invert(1);}
   </style>
 </head>
 <body>
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg">
-    <div class="container-fluid">
-      <a class="navbar-brand text-white" href="#">FIMS Inventory</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li><a class="nav-link" href="/dashboard.html">Dashboard</a></li>
-          <li><a class="nav-link" href="/orders.html">Orders</a></li>
-          <li><a class="nav-link" href="/reports.html">Reports</a></li>
-          <li><button id="logoutButton" class="btn login-button"><span></span>Logout</button></li>
-        </ul>
-      </div>
-    </div>
+    <a class="navbar-brand text-white" href="#">FIMS</a>
+    <ul class="navbar-nav ms-auto">
+      <li><a class="nav-link" href="/dashboard.html">Dashboard</a></li>
+      <li><a class="nav-link" href="/orders.html">Orders</a></li>
+      <li><a class="nav-link" href="/reports.html">Reports</a></li>
+      <li><button id="logoutButton" class="btn btn-outline-light">Logout</button></li>
+    </ul>
   </nav>
 
   <div class="container my-5">
-    <h1 class="text-white mb-4">Inventory</h1>
-    <table id="inventory-table" class="table table-striped table-dark">
+    <button id="add-item-btn" class="btn btn-success mb-3">+ Add New Item</button>
+    <table id="inventory-table" class="table table-hover table-dark">
       <thead>
         <tr>
-          <th>ID</th>
-          <th>Type</th>
-          <th>Color</th>
-          <th>Quantity</th>
-          <th>Price / Yard</th>
-          <th>Restock Threshold</th>
+          <th>ID</th><th>Type</th><th>Color</th>
+          <th>Quantity</th><th>Price/unit</th><th>Restock Thresh</th><th>Actions</th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
   </div>
 
-  <!-- Bootstrap & JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <!-- Add/Edit Modal -->
+  <div class="modal fade" id="itemModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content text-dark">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitle">Add Item</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="itemForm">
+            <input type="hidden" id="fabric_id" />
+            <div class="mb-3">
+              <label class="form-label">Fabric Type</label>
+              <input id="fabric_type" class="form-control" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Color</label>
+              <input id="color" class="form-control" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Quantity</label>
+              <input id="quantity" type="number" class="form-control" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Price per Unit</label>
+              <input id="price_per_unit" type="number" step="0.01" class="form-control" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Restock Threshold</label>
+              <input id="restock_threshold" type="number" class="form-control" required />
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button id="saveItemBtn" class="btn btn-primary">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS & main script -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    const itemModal = new bootstrap.Modal(document.getElementById('itemModal'));
+    const form = document.getElementById('itemForm');
+    let isEdit = false;
+
+    // Logout
     document.getElementById('logoutButton').onclick = async () => {
-      await fetch('/api/logout', { method:'POST', credentials:'include' });
+      await fetch('/api/logout',{ method:'POST',credentials:'include' });
       location.replace('/login.html');
     };
 
-    (async () => {
-      const res = await fetch('/api/inventory', { credentials:'include' });
-      if (!res.ok) return;
-      const data = await res.json();
+    // Load and render inventory
+    async function loadInventory(){
+      const data = await fetch('/api/inventory',{ credentials:'include' })
+                        .then(r=>r.json());
       const tbody = document.querySelector('#inventory-table tbody');
-      data.forEach(item => {
+      tbody.innerHTML = '';
+      for(const item of data){
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${item.fabric_id}</td>
@@ -101,10 +137,70 @@
           <td>${item.quantity}</td>
           <td>$${item.price_per_unit.toFixed(2)}</td>
           <td>${item.restock_threshold}</td>
-        `;
+          <td>
+            <button class="btn btn-sm btn-outline-light edit-btn">Edit</button>
+            <button class="btn btn-sm btn-outline-danger delete-btn">Delete</button>
+          </td>`;
         tbody.appendChild(tr);
+      }
+    }
+
+    // Open “Add” modal
+    document.getElementById('add-item-btn').onclick = () => {
+      isEdit = false;
+      document.getElementById('modalTitle').innerText = 'Add Item';
+      form.reset();
+      itemModal.show();
+    };
+
+    // Table actions
+    document.querySelector('#inventory-table tbody').addEventListener('click', e => {
+      const tr = e.target.closest('tr');
+      if(e.target.classList.contains('edit-btn')){
+        isEdit = true;
+        document.getElementById('modalTitle').innerText = 'Edit Item';
+        document.getElementById('fabric_id').value = tr.children[0].innerText;
+        document.getElementById('fabric_type').value = tr.children[1].innerText;
+        document.getElementById('color').value = tr.children[2].innerText;
+        document.getElementById('quantity').value = tr.children[3].innerText;
+        document.getElementById('price_per_unit').value = parseFloat(tr.children[4].innerText.slice(1));
+        document.getElementById('restock_threshold').value = tr.children[5].innerText;
+        itemModal.show();
+      }
+      if(e.target.classList.contains('delete-btn')){
+        const fid = tr.children[0].innerText;
+        if(confirm('Delete item '+fid+'?')){
+          fetch(`/api/inventory/${fid}`,{method:'DELETE',credentials:'include'})
+            .then(loadInventory);
+        }
+      }
+    });
+
+    // Save (add/update)
+    document.getElementById('saveItemBtn').onclick = async () => {
+      const payload = {
+        fabric_type:    form.fabric_type.value,
+        color:          form.color.value,
+        quantity:       +form.quantity.value,
+        price_per_unit: +form.price_per_unit.value,
+        restock_threshold:+form.restock_threshold.value
+      };
+      let url = '/api/inventory', method = 'POST';
+      if(isEdit){
+        url += '/'+form.fabric_id.value;
+        method = 'PUT';
+      }
+      await fetch(url,{
+        method,credentials:'include',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
       });
-    })();
+      itemModal.hide();
+      loadInventory();
+    };
+
+    // Initial load
+    loadInventory();
   </script>
 </body>
 </html>
