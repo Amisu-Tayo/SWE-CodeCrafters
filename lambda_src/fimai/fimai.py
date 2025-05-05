@@ -9,23 +9,33 @@ from db_config import get_connection
 
 app = Flask(__name__)
 
-CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "https://fims.store",
-    "Access-Control-Allow-Methods": "OPTIONS,GET,POST",
-    "Access-Control-Allow-Headers": "Content-Type,Authorization",
-    "Access-Control-Allow-Credentials": "true"
+ALLOWED_ORIGINS = {
+    "https://fims.store",
+    "https://fims-code-crafters-gcbwxgkqg-amisu-tayos-projects.vercel.app"
 }
 
 @app.after_request
 def add_cors(response):
-    for k, v in CORS_HEADERS.items():
-        response.headers[k] = v
+    origin = request.headers.get("Origin", "")
+    if origin in ALLOWED_ORIGINS:
+        response.headers["Access-Control-Allow-Origin"] = origin
+    response.headers["Access-Control-Allow-Methods"] = "OPTIONS,GET,POST"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
+    response.headers["Access-Control-Allow-Credentials"] = "true"
     return response
 
 @app.route("/api/fimai", methods=["OPTIONS"])
 @app.route("/api/fimai/chat", methods=["OPTIONS"])
 def options():
-    return make_response(("", 200, CORS_HEADERS))
+    origin = request.headers.get("Origin", "")
+    headers = {
+        "Access-Control-Allow-Methods": "OPTIONS,GET,POST",
+        "Access-Control-Allow-Headers": "Content-Type,Authorization",
+        "Access-Control-Allow-Credentials": "true"
+    }
+    if origin in ALLOWED_ORIGINS:
+        headers["Access-Control-Allow-Origin"] = origin
+    return make_response(("", 200, headers))
 
 MODELS = {}
 TRENDS = {}
@@ -56,16 +66,16 @@ def get_all_fabrics():
     conn.close()
     return fabrics
 
-@app.route("/api/fimai", methods=["GET"])
+@app.route("/api/fimai", methods=["GET", "POST"])
 def fimai():
     load_models_and_trends()
     conn = get_connection()
-    cur  = conn.cursor(dictionary=True)
+    cur = conn.cursor(dictionary=True)
     cur.execute("SELECT fabric_type, quantity, restock_threshold FROM fabric_inventory")
     inv = cur.fetchall()
     conn.close()
-    now        = datetime.utcnow()
-    month_idx  = now.month
+    now = datetime.utcnow()
+    month_idx = now.month
     month_name = now.strftime("%B")
     if not inv:
         top = get_top_trends(month_idx, top_n=3)
@@ -76,14 +86,14 @@ def fimai():
         return jsonify(msgs)
     out = []
     for row in inv:
-        ft  = row["fabric_type"].strip().lower()
+        ft = row["fabric_type"].strip().lower()
         qty = row["quantity"]
         thr = row["restock_threshold"]
         model = MODELS.get(ft)
         if model:
-            future   = model.make_future_dataframe(periods=1, freq="M")
+            future = model.make_future_dataframe(periods=1, freq="M")
             forecast = model.predict(future)
-            yhat     = int(forecast.iloc[-1]["yhat"])
+            yhat = int(forecast.iloc[-1]["yhat"])
             next_mon = forecast.iloc[-1]["ds"].strftime("%B")
             if qty < thr:
                 advice = f"Below restock threshold ({thr}); reorder before {next_mon}."
@@ -102,7 +112,7 @@ def fimai():
         out.append(msg)
     return jsonify(out)
 
-@app.route("/api/fimai/chat", methods=["POST"])
+@app.route("/api/fimai/chat", methods=["GET", "POST"])
 def chat():
     load_models_and_trends()
     q = (request.get_json() or {}).get("message", "").lower()
@@ -113,9 +123,10 @@ def chat():
         for ft in fabrics:
             if ft in q:
                 conn = get_connection()
-                cur  = conn.cursor()
+                cur = conn.cursor()
                 cur.execute("SELECT quantity FROM fabric_inventory WHERE LOWER(fabric_type)=%s", (ft,))
-                row = cur.fetchone(); conn.close()
+                row = cur.fetchone()
+                conn.close()
                 qty = row[0] if row else 0
                 return jsonify(response=f"You have {qty} yards of {ft}.")
     if any(kw in q for kw in ["sell", "forecast", "forecasting"]):
@@ -123,25 +134,28 @@ def chat():
             if ft in q and ft in MODELS:
                 model = MODELS[ft]
                 future = model.make_future_dataframe(periods=1, freq="M")
-                pred   = model.predict(future).iloc[-1]
-                yhat   = int(pred["yhat"])
-                mon    = pred["ds"].strftime("%B")
+                pred = model.predict(future).iloc[-1]
+                yhat = int(pred["yhat"])
+                mon = pred["ds"].strftime("%B")
                 return jsonify(response=f"In {mon}, you’ll sell ~{yhat} yards of {ft}.")
     conn = get_connection()
-    cur  = conn.cursor()
+    cur = conn.cursor()
     if "total items" in q or ("how many" in q and "items" in q):
         cur.execute("SELECT COUNT(*) FROM fabric_inventory")
-        cnt = cur.fetchone()[0]; conn.close()
+        cnt = cur.fetchone()[0]
+        conn.close()
         return jsonify(response=f"You have {cnt} SKUs in inventory.")
     if "low stock" in q or "restock" in q:
         cur.execute("SELECT fabric_type FROM fabric_inventory WHERE quantity < restock_threshold")
-        low = [r[0] for r in cur.fetchall()]; conn.close()
+        low = [r[0] for r in cur.fetchall()]
+        conn.close()
         if low:
             return jsonify(response="Low stock: " + ", ".join(low))
         return jsonify(response="All SKUs are above their restock thresholds.")
     if "usage" in q or "sold" in q:
         cur.execute("SELECT SUM(quantity_changed) FROM stock_transactions WHERE transaction_type='Removal' AND transaction_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)")
-        total = cur.fetchone()[0] or 0; conn.close()
+        total = cur.fetchone()[0] or 0
+        conn.close()
         return jsonify(response=f"Sold {total} yards in the last 30 days.")
     conn.close()
     return jsonify(response="Sorry, I didn’t understand that. Ask me how many yards you have of a fabric, or to forecast sales, or general stats like total items or low stock.")

@@ -86,12 +86,9 @@
   <!-- Bootstrap JS & Chart Drawing Logic -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
   <script>
-    // Auth still on Vercel
     const AUTH_BASE = "/api";
-    // Reports data on AWS
     const AWS_BASE  = "https://cysmmzomhh.execute-api.us-east-1.amazonaws.com/Prod/api";
-  
-    // Session‑check on load
+
     window.addEventListener('DOMContentLoaded', async () => {
       try {
         const res = await fetch(`${AUTH_BASE}/check_session`, { credentials: 'include' });
@@ -104,23 +101,20 @@
         window.location.replace('/login.html');
       }
     });
-  
-    // Logout
+
     document.getElementById('logoutButton').addEventListener('click', async () => {
       await fetch(`${AUTH_BASE}/logout`, { method: 'POST', credentials: 'include' });
       location.replace('/login.html');
     });
-  
+
     let reports = [], reportChart;
-  
-    // Fetch & render reports
+
     async function loadReports() {
       try {
         const res = await fetch(`${AWS_BASE}/reports`, { credentials: 'include' });
         if (!res.ok) throw new Error(`Status ${res.status}`);
         reports = await res.json();
-  
-        // Populate selector
+
         const sel = document.getElementById('report-select');
         sel.innerHTML = '';
         reports.forEach(r => {
@@ -129,8 +123,7 @@
           opt.text  = `${new Date(r.report_date).toLocaleDateString()} (Report #${r.report_id})`;
           sel.appendChild(opt);
         });
-  
-        // Populate table
+
         const tbody = document.querySelector('#reports-table tbody');
         tbody.innerHTML = '';
         reports.forEach(r => {
@@ -143,11 +136,9 @@
           `;
           tbody.appendChild(tr);
         });
-  
-        // Draw initial chart
+
         drawChart(reports[0].report_data);
-  
-        // Redraw when user changes selection
+
         sel.onchange = () => {
           const selId = parseInt(sel.value, 10);
           const rep   = reports.find(x => x.report_id === selId);
@@ -157,13 +148,20 @@
         console.error('Failed to load reports:', err);
       }
     }
-  
-    // Chart drawing
-    function drawChart(jsonStr) {
-      const dataObj = JSON.parse(jsonStr);
-      const labels  = Object.keys(dataObj).map(s => s.charAt(0).toUpperCase() + s.slice(1));
-      const values  = Object.values(dataObj);
-  
+
+    function drawChart(raw) {
+      let dataObj;
+      // if it's a string, parse, else assume already object
+      if (typeof raw === 'string') {
+        dataObj = JSON.parse(raw);
+      } else {
+        dataObj = raw;
+      }
+
+      const labels = Object.keys(dataObj)
+        .map(s => s.charAt(0).toUpperCase() + s.slice(1));
+      const values = Object.values(dataObj);
+
       const ctx = document.getElementById('report-chart').getContext('2d');
       if (reportChart) reportChart.destroy();
       reportChart = new Chart(ctx, {
@@ -179,9 +177,7 @@
           }]
         },
         options: {
-          scales: {
-            y: { beginAtZero: true }
-          }
+          scales: { y: { beginAtZero: true } }
         }
       });
     }

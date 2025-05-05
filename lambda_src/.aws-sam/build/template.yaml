@@ -49,14 +49,14 @@ Resources:
             RestApiId:
               Ref: MainApi
             Path: /api/fimai
-            Method: GET
+            Method: ANY
         FimaiChatApi:
           Type: Api
           Properties:
             RestApiId:
               Ref: MainApi
             Path: /api/fimai/chat
-            Method: POST
+            Method: ANY
       ImageUri: fimaifunction:latest
   InventoryFunction:
     Type: AWS::Serverless::Function

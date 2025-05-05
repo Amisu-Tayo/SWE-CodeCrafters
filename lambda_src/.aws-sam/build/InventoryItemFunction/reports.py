@@ -21,14 +21,18 @@ def _default(obj):
         return int(n) if obj % 1 == 0 else n
     if isinstance(obj, (datetime.date, datetime.datetime)):
         return obj.isoformat()
-    raise TypeError
+    raise TypeError(f"Type {type(obj)} not serializable")
 
 def handler(event, context):
     logger.debug("Reports event: %s", event)
     method = event.get("httpMethod")
 
     if method == "OPTIONS":
-        return {"statusCode": 200, "headers": CORS_HEADERS, "body": ""}
+        return {
+            "statusCode": 200,
+            "headers": CORS_HEADERS,
+            "body": ""
+        }
 
     conn = None
     try:
@@ -43,8 +47,19 @@ def handler(event, context):
            ORDER BY report_date DESC
         """)
         rows = cur.fetchall()
+
+        # stringify the JSON column so the front‑end can JSON.parse it
+        for r in rows:
+            rd = r.get("report_data")
+            if not isinstance(rd, str):
+                r["report_data"] = json.dumps(rd, default=_default)
+
         body = json.dumps(rows, default=_default)
-        return {"statusCode": 200, "headers": CORS_HEADERS, "body": body}
+        return {
+            "statusCode": 200,
+            "headers": CORS_HEADERS,
+            "body": body
+        }
 
     except Exception as e:
         logger.exception("Reports handler failed")
