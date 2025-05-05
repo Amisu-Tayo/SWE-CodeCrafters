@@ -20,7 +20,7 @@ Resources:
     Type: AWS::Serverless::Function
     Metadata:
       DockerContext: /Users/tayo/Documents/School_Stuff/Tayo/Spring 2025 Classes/Software
-        Engineering/SWE-CodeCrafters/lambda_src
+        Engineering/SWE-CodeCrafters/lambda_src/fimai
       Dockerfile: Dockerfile.lambda
       SamResourceId: FimaiFunction
     Properties:
@@ -28,7 +28,7 @@ Resources:
       Timeout: 90
       ImageConfig:
         Command:
-        - api.fimai.handler
+        - fimai.handler
       Environment:
         Variables:
           DB_HOST:
@@ -54,7 +54,8 @@ Resources:
   InventoryFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: api/inventory.handler
+      CodeUri: InventoryFunction
+      Handler: inventory.handler
       Runtime: python3.9
       Environment:
         Variables:
@@ -72,13 +73,13 @@ Resources:
           Properties:
             Path: /api/inventory
             Method: ANY
-      CodeUri: InventoryFunction
     Metadata:
       SamResourceId: InventoryFunction
   InventoryItemFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: api/inventory_item.handler
+      CodeUri: InventoryItemFunction
+      Handler: inventory_item.handler
       Runtime: python3.9
       Environment:
         Variables:
@@ -96,13 +97,13 @@ Resources:
           Properties:
             Path: /api/inventory/{fid}
             Method: ANY
-      CodeUri: InventoryItemFunction
     Metadata:
       SamResourceId: InventoryItemFunction
   OrdersFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: api/orders.handler
+      CodeUri: OrdersFunction
+      Handler: orders.handler
       Runtime: python3.9
       Environment:
         Variables:
@@ -120,13 +121,13 @@ Resources:
           Properties:
             Path: /api/orders
             Method: ANY
-      CodeUri: OrdersFunction
     Metadata:
       SamResourceId: OrdersFunction
   OrderItemFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: api/order_item.handler
+      CodeUri: OrderItemFunction
+      Handler: order_item.handler
       Runtime: python3.9
       Environment:
         Variables:
@@ -144,13 +145,13 @@ Resources:
           Properties:
             Path: /api/orders/{oid}
             Method: ANY
-      CodeUri: OrderItemFunction
     Metadata:
       SamResourceId: OrderItemFunction
   UsageFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: api/usage.handler
+      CodeUri: UsageFunction
+      Handler: usage.handler
       Runtime: python3.9
       Environment:
         Variables:
@@ -168,13 +169,13 @@ Resources:
           Properties:
             Path: /api/usage
             Method: GET
-      CodeUri: UsageFunction
     Metadata:
       SamResourceId: UsageFunction
   ReportsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: api/reports.handler
+      CodeUri: ReportsFunction
+      Handler: reports.handler
       Runtime: python3.9
       Environment:
         Variables:
@@ -192,7 +193,6 @@ Resources:
           Properties:
             Path: /api/reports
             Method: GET
-      CodeUri: ReportsFunction
     Metadata:
       SamResourceId: ReportsFunction
 Outputs:
