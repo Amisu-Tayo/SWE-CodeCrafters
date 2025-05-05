@@ -1,12 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Globals:
-  Api:
-    Cors:
-      AllowMethods: '''OPTIONS,GET,POST,PUT,DELETE'''
-      AllowCredentials: '''true'''
-      AllowHeaders: '''Content-Type,Authorization'''
-      AllowOrigin: '''https://fims.store'''
 Parameters:
   DBHostParam:
     Type: String
@@ -17,6 +10,15 @@ Parameters:
   DBNameParam:
     Type: String
 Resources:
+  MainApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowOrigin: '''https://fims.store'''
+        AllowMethods: '''OPTIONS,GET,POST,PUT,DELETE'''
+        AllowHeaders: '''Content-Type,Authorization'''
+        AllowCredentials: '''true'''
   FimaiFunction:
     Type: AWS::Serverless::Function
     Metadata:
@@ -44,13 +46,17 @@ Resources:
         FimaiApi:
           Type: Api
           Properties:
+            RestApiId:
+              Ref: MainApi
             Path: /api/fimai
-            Method: get
+            Method: GET
         FimaiChatApi:
           Type: Api
           Properties:
+            RestApiId:
+              Ref: MainApi
             Path: /api/fimai/chat
-            Method: post
+            Method: POST
       ImageUri: fimaifunction:latest
   InventoryFunction:
     Type: AWS::Serverless::Function
@@ -72,6 +78,8 @@ Resources:
         InventoryApi:
           Type: Api
           Properties:
+            RestApiId:
+              Ref: MainApi
             Path: /api/inventory
             Method: ANY
     Metadata:
@@ -96,6 +104,8 @@ Resources:
         InventoryItemApi:
           Type: Api
           Properties:
+            RestApiId:
+              Ref: MainApi
             Path: /api/inventory/{fid}
             Method: ANY
     Metadata:
@@ -120,6 +130,8 @@ Resources:
         OrdersApi:
           Type: Api
           Properties:
+            RestApiId:
+              Ref: MainApi
             Path: /api/orders
             Method: ANY
     Metadata:
@@ -144,6 +156,8 @@ Resources:
         OrderItemApi:
           Type: Api
           Properties:
+            RestApiId:
+              Ref: MainApi
             Path: /api/orders/{oid}
             Method: ANY
     Metadata:
@@ -168,6 +182,8 @@ Resources:
         UsageApi:
           Type: Api
           Properties:
+            RestApiId:
+              Ref: MainApi
             Path: /api/usage
             Method: GET
     Metadata:
@@ -192,16 +208,38 @@ Resources:
         ReportsApi:
           Type: Api
           Properties:
+            RestApiId:
+              Ref: MainApi
             Path: /api/reports
             Method: GET
     Metadata:
       SamResourceId: ReportsFunction
 Outputs:
+  ApiBaseUrl:
+    Description: Base invoke URL for all endpoints
+    Value:
+      Fn::Sub: https://${MainApi}.execute-api.${AWS::Region}.amazonaws.com/Prod
   FimaiApiUrl:
     Description: Invoke URL for FIMai endpoint
     Value:
-      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/fimai
+      Fn::Sub: https://${MainApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/fimai
   FimaiChatUrl:
-    Description: Invoke URL for FIMai chat endpoint
+    Description: Invoke URL for chat endpoint
     Value:
-      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/fimai/chat
+      Fn::Sub: https://${MainApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/fimai/chat
+  InventoryApiUrl:
+    Description: Invoke URL for inventory endpoint
+    Value:
+      Fn::Sub: https://${MainApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/inventory
+  OrdersApiUrl:
+    Description: Invoke URL for Orders endpoint
+    Value:
+      Fn::Sub: https://${MainApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/orders
+  UsageApiUrl:
+    Description: Invoke URL for Usage endpoint
+    Value:
+      Fn::Sub: https://${MainApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/usage
+  ReportsApiUrl:
+    Description: Invoke URL for Reports endpoint
+    Value:
+      Fn::Sub: https://${MainApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/reports
