@@ -5,7 +5,7 @@ import re
 from datetime import datetime
 from flask import Flask, jsonify, request
 import awsgi
-from api.db_config import get_connection
+from db_config import get_connection
 
 app = Flask(__name__)
 

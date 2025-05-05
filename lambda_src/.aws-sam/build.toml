@@ -9,11 +9,11 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["InventoryFunction", "InventoryItemFunction", "OrdersFunction", "OrderItemFunction", "UsageFunction", "ReportsFunction"]
 
-[function_build_definitions.6a90f8ba-147b-459f-b018-ad6289e9bf64]
+[function_build_definitions.9a51bbb5-7bdc-4bdd-b44d-b17ccecfbc70]
 packagetype = "Image"
 functions = ["FimaiFunction"]
 
-[function_build_definitions.6a90f8ba-147b-459f-b018-ad6289e9bf64.metadata]
+[function_build_definitions.9a51bbb5-7bdc-4bdd-b44d-b17ccecfbc70.metadata]
 Dockerfile = "Dockerfile.lambda"
 DockerContext = "/Users/tayo/Documents/School_Stuff/Tayo/Spring 2025 Classes/Software Engineering/SWE-CodeCrafters/lambda_src/fimai"
 
