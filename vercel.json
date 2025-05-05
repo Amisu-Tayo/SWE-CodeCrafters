@@ -1,8 +1,5 @@
 {
     "version": 2,
-    "static": {
-      "directory": "public"
-    },
     "builds": [
       {
         "src": "api/*.py",
@@ -10,6 +7,7 @@
       }
     ],
     "routes": [
+      { "handle": "filesystem" },
       {
         "src": "/api/(inventory|orders|usage|reports)(?:/.*)?$",
         "dest": "api/index.py"
