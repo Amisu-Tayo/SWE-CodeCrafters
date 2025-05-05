@@ -1,10 +1,27 @@
 import json
+import logging
+import decimal
 from db_config import get_connection
 
+# Set up logging so we see errors in CloudWatch
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+
+# helper for json.dumps to serialize Decimal → int/float
+def _decimal_default(obj):
+    if isinstance(obj, decimal.Decimal):
+        # use int if no fractional part, else float
+        n = float(obj)
+        return int(n) if obj % 1 == 0 else n
+    raise TypeError(f"Object of type {type(obj)} not serializable")
+
 def handler(event, context):
-    conn = get_connection()
-    cur  = conn.cursor(dictionary=True)
+    logger.debug("Inventory event: %s", event)
+    conn = None
     try:
+        conn = get_connection()
+        cur  = conn.cursor(dictionary=True)
+
         if event["httpMethod"] == "GET":
             cur.execute("""
               SELECT fabric_id,
@@ -19,7 +36,7 @@ def handler(event, context):
             return {
                 "statusCode": 200,
                 "headers": { "Content-Type": "application/json" },
-                "body": json.dumps(rows)
+                "body": json.dumps(rows, default=_decimal_default)
             }
 
         elif event["httpMethod"] == "POST":
@@ -46,7 +63,22 @@ def handler(event, context):
             }
 
         else:
-            return { "statusCode": 405, "body": "" }
+            return {
+                "statusCode": 405,
+                "headers": { "Content-Type": "application/json" },
+                "body": json.dumps({ "error": "Method not allowed" })
+            }
+
+    except Exception as e:
+        # Log full stack trace
+        logger.exception("Inventory handler failed")
+        # Return the error in the body for quick debugging
+        return {
+            "statusCode": 500,
+            "headers": { "Content-Type": "application/json" },
+            "body": json.dumps({ "error": str(e) })
+        }
 
     finally:
-        conn.close()
+        if conn:
+            conn.close()
