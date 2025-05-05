@@ -16,11 +16,11 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
-      Cors:
-        AllowMethods: "'OPTIONS,GET,POST,PUT,DELETE'"
-        AllowHeaders: "'Content-Type,Authorization'"
-        AllowOrigin: "'https://fims.store'"
-        AllowCredentials: true
+    Cors:
+      AllowOrigin: "'*'"
+      AllowMethods: "'OPTIONS,GET,POST,PUT,DELETE'"
+      AllowHeaders: "'Content-Type,Authorization'"
+      
 
   FimaiFunction:
     Type: AWS::Serverless::Function
@@ -50,7 +50,7 @@ Resources:
           Properties:
             RestApiId: !Ref MainApi
             Path: /api/fimai/chat
-            Method: ANY
+            Method: POST
 
   InventoryFunction:
     Type: AWS::Serverless::Function
@@ -150,7 +150,7 @@ Resources:
           Properties:
             RestApiId: !Ref MainApi
             Path: /api/usage
-            Method: GET
+            Method: ANY
 
   ReportsFunction:
     Type: AWS::Serverless::Function
@@ -170,7 +170,7 @@ Resources:
           Properties:
             RestApiId: !Ref MainApi
             Path: /api/reports
-            Method: GET
+            Method: ANY
 
 Outputs:
   FimaiApiUrl:
