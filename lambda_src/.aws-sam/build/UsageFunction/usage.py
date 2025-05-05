@@ -1,5 +1,5 @@
 import json
-from api.db_config import get_connection
+from db_config import get_connection
 
 def handler(event, context):
     conn = get_connection()
