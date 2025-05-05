@@ -15,9 +15,9 @@ Resources:
     Properties:
       StageName: Prod
       Cors:
-        AllowOrigin: '''https://fims.store'''
         AllowMethods: '''OPTIONS,GET,POST,PUT,DELETE'''
         AllowHeaders: '''Content-Type,Authorization'''
+        AllowOrigin: '''https://fims.store'''
         AllowCredentials: '''true'''
   FimaiFunction:
     Type: AWS::Serverless::Function
@@ -215,31 +215,21 @@ Resources:
     Metadata:
       SamResourceId: ReportsFunction
 Outputs:
-  ApiBaseUrl:
-    Description: Base invoke URL for all endpoints
-    Value:
-      Fn::Sub: https://${MainApi}.execute-api.${AWS::Region}.amazonaws.com/Prod
   FimaiApiUrl:
-    Description: Invoke URL for FIMai endpoint
     Value:
       Fn::Sub: https://${MainApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/fimai
   FimaiChatUrl:
-    Description: Invoke URL for chat endpoint
     Value:
       Fn::Sub: https://${MainApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/fimai/chat
   InventoryApiUrl:
-    Description: Invoke URL for inventory endpoint
     Value:
       Fn::Sub: https://${MainApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/inventory
   OrdersApiUrl:
-    Description: Invoke URL for Orders endpoint
     Value:
       Fn::Sub: https://${MainApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/orders
   UsageApiUrl:
-    Description: Invoke URL for Usage endpoint
     Value:
       Fn::Sub: https://${MainApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/usage
   ReportsApiUrl:
-    Description: Invoke URL for Reports endpoint
     Value:
       Fn::Sub: https://${MainApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/reports

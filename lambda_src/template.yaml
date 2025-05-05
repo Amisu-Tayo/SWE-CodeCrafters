@@ -1,13 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 
-Globals:
-  Api:
-    Cors:
-      AllowMethods: "'OPTIONS,GET,POST'"
-      AllowHeaders: "'Content-Type,Authorization'"
-      AllowOrigin: "'https://fims.store'"
-
 Parameters:
   DBHostParam:
     Type: String
@@ -19,6 +12,16 @@ Parameters:
     Type: String
 
 Resources:
+  MainApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowMethods: "'OPTIONS,GET,POST,PUT,DELETE'"
+        AllowHeaders: "'Content-Type,Authorization'"
+        AllowOrigin: "'https://fims.store'"
+        AllowCredentials: "'true'"
+
   FimaiFunction:
     Type: AWS::Serverless::Function
     Metadata:
@@ -29,8 +32,8 @@ Resources:
       Timeout: 90
       ImageConfig:
         Command: ["fimai.handler"]
-      Environment:            
-        Variables:            
+      Environment:
+        Variables:
           DB_HOST: !Ref DBHostParam
           DB_USER: !Ref DBUserParam
           DB_PASS: !Ref DBPassParam
@@ -39,13 +42,16 @@ Resources:
         FimaiApi:
           Type: Api
           Properties:
+            RestApiId: !Ref MainApi
             Path: /api/fimai
-            Method: get
+            Method: GET
         FimaiChatApi:
           Type: Api
           Properties:
+            RestApiId: !Ref MainApi
             Path: /api/fimai/chat
-            Method: post
+            Method: POST
+
   InventoryFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -62,6 +68,7 @@ Resources:
         InventoryApi:
           Type: Api
           Properties:
+            RestApiId: !Ref MainApi
             Path: /api/inventory
             Method: ANY
 
@@ -81,6 +88,7 @@ Resources:
         InventoryItemApi:
           Type: Api
           Properties:
+            RestApiId: !Ref MainApi
             Path: /api/inventory/{fid}
             Method: ANY
 
@@ -100,6 +108,7 @@ Resources:
         OrdersApi:
           Type: Api
           Properties:
+            RestApiId: !Ref MainApi
             Path: /api/orders
             Method: ANY
 
@@ -119,6 +128,7 @@ Resources:
         OrderItemApi:
           Type: Api
           Properties:
+            RestApiId: !Ref MainApi
             Path: /api/orders/{oid}
             Method: ANY
 
@@ -138,6 +148,7 @@ Resources:
         UsageApi:
           Type: Api
           Properties:
+            RestApiId: !Ref MainApi
             Path: /api/usage
             Method: GET
 
@@ -157,13 +168,20 @@ Resources:
         ReportsApi:
           Type: Api
           Properties:
+            RestApiId: !Ref MainApi
             Path: /api/reports
             Method: GET
-  
+
 Outputs:
   FimaiApiUrl:
-    Description: "Invoke URL for FIMai endpoint"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/fimai"
+    Value: !Sub "https://${MainApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/fimai"
   FimaiChatUrl:
-    Description: "Invoke URL for FIMai chat endpoint"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/fimai/chat"
+    Value: !Sub "https://${MainApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/fimai/chat"
+  InventoryApiUrl:
+    Value: !Sub "https://${MainApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/inventory"
+  OrdersApiUrl:
+    Value: !Sub "https://${MainApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/orders"
+  UsageApiUrl:
+    Value: !Sub "https://${MainApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/usage"
+  ReportsApiUrl:
+    Value: !Sub "https://${MainApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/reports"
