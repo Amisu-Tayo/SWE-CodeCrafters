@@ -1,22 +1,22 @@
 {
     "version": 2,
+    "static": {
+      "directory": "public"
+    },
     "builds": [
-      { "src": "api/*.py", "use": "@vercel/python" }
+      {
+        "src": "api/*.py",
+        "use": "@vercel/python"
+      }
     ],
     "routes": [
-      { "handle": "filesystem" },
-  
       {
         "src": "/api/(inventory|orders|usage|reports)(?:/.*)?$",
         "dest": "api/index.py"
       },
       {
-        "src": "/api/(.*)",
+        "src": "/api/(.*)$",
         "dest": "api/$1.py"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "public/$1"
       }
     ]
   }
