@@ -4,7 +4,8 @@ Transform: AWS::Serverless-2016-10-31
 Globals:
   Api:
     Cors:
-      AllowMethods: "'OPTIONS,GET,POST'"
+      AllowMethods: "'OPTIONS,GET,POST,PUT,DELETE'"
+      AllowCredentials: "'true'"
       AllowHeaders: "'Content-Type,Authorization'"
       AllowOrigin: "'https://fims.store'"
 
