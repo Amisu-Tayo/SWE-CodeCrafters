@@ -20,7 +20,7 @@ Resources:
         AllowMethods: "'OPTIONS,GET,POST,PUT,DELETE'"
         AllowHeaders: "'Content-Type,Authorization'"
         AllowOrigin: "'https://fims.store'"
-        AllowCredentials: "'true'"
+        AllowCredentials: true
 
   FimaiFunction:
     Type: AWS::Serverless::Function
