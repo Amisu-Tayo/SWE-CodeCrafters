@@ -4,10 +4,16 @@
       {
         "src": "api/*.py",
         "use": "@vercel/python"
+      },
+      {
+        "src": "public/**/*",
+        "use": "@vercel/static"
       }
     ],
     "routes": [
-      { "handle": "filesystem" },
+      {
+        "handle": "filesystem"
+      },
       {
         "src": "/api/(inventory|orders|usage|reports)(?:/.*)?$",
         "dest": "api/index.py"
