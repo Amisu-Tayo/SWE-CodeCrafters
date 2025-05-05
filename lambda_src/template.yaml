@@ -28,6 +28,7 @@ Resources:
 
     Properties:
       PackageType: Image
+      Timeout: 90
       ImageConfig:
         Command: ["api.fimai.handler"]
 

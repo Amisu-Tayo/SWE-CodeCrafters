@@ -6,6 +6,12 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SESSION_SECRET", "dev-secret")
 
 
+from flask import session
+
+@app.route("/api/check_session", methods=["GET"])
+def check_session():
+    return jsonify({ "logged_in": session.get("_logged_in", False) })
+
 # ── Inventory ───────────────────────────────────────────────────────
 
 @app.route("/api/inventory", methods=["GET", "POST"])
