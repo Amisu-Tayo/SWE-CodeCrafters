@@ -1,0 +1,10 @@
+version = 0.1
+[default.deploy.parameters]
+stack_name = "fims-fimai"
+resolve_s3 = true
+s3_prefix = "fims-fimai"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+image_repositories = ["FimaiFunction=196946780998.dkr.ecr.us-east-1.amazonaws.com/fimsfimai0b3b624b/fimaifunctionc9ca281drepo"]
+parameter_overrides = "DBHostParam=\"fabric-db.c2rymawuekqu.us-east-1.rds.amazonaws.com\" DBUserParam=\"admin\" DBPassParam=\"CodeCrafters-Group6\" DBNameParam=\"fabric_inventory\""

@@ -1,0 +1,21 @@
+FROM public.ecr.aws/lambda/python:3.9
+
+# 1) Install any OS‑level deps (Prophet needs a compiler)
+RUN yum install -y gcc gcc-c++ make
+
+# 2) Set working dir for Lambda
+WORKDIR ${LAMBDA_TASK_ROOT}
+
+# 3) Copy & install Python deps
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt --target .
+
+# 4) Copy your application code and models
+COPY api    ./api
+COPY models ./models
+
+# 5) Tell Lambda which handler to invoke:
+#    "api.fimai.handler" means:
+#     - look in api/fimai.py
+#     - call the `handler = Mangum(app)` object
+CMD ["api.fimai.handler"]

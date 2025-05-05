@@ -25,6 +25,7 @@ Resources:
       SamResourceId: FimaiFunction
     Properties:
       PackageType: Image
+      Timeout: 90
       ImageConfig:
         Command:
         - api.fimai.handler
@@ -50,6 +51,150 @@ Resources:
             Path: /api/fimai/chat
             Method: post
       ImageUri: fimaifunction:latest
+  InventoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: api/inventory.handler
+      Runtime: python3.9
+      Environment:
+        Variables:
+          DB_HOST:
+            Ref: DBHostParam
+          DB_USER:
+            Ref: DBUserParam
+          DB_PASS:
+            Ref: DBPassParam
+          DB_NAME:
+            Ref: DBNameParam
+      Events:
+        InventoryApi:
+          Type: Api
+          Properties:
+            Path: /api/inventory
+            Method: ANY
+      CodeUri: InventoryFunction
+    Metadata:
+      SamResourceId: InventoryFunction
+  InventoryItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: api/inventory_item.handler
+      Runtime: python3.9
+      Environment:
+        Variables:
+          DB_HOST:
+            Ref: DBHostParam
+          DB_USER:
+            Ref: DBUserParam
+          DB_PASS:
+            Ref: DBPassParam
+          DB_NAME:
+            Ref: DBNameParam
+      Events:
+        InventoryItemApi:
+          Type: Api
+          Properties:
+            Path: /api/inventory/{fid}
+            Method: ANY
+      CodeUri: InventoryItemFunction
+    Metadata:
+      SamResourceId: InventoryItemFunction
+  OrdersFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: api/orders.handler
+      Runtime: python3.9
+      Environment:
+        Variables:
+          DB_HOST:
+            Ref: DBHostParam
+          DB_USER:
+            Ref: DBUserParam
+          DB_PASS:
+            Ref: DBPassParam
+          DB_NAME:
+            Ref: DBNameParam
+      Events:
+        OrdersApi:
+          Type: Api
+          Properties:
+            Path: /api/orders
+            Method: ANY
+      CodeUri: OrdersFunction
+    Metadata:
+      SamResourceId: OrdersFunction
+  OrderItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: api/order_item.handler
+      Runtime: python3.9
+      Environment:
+        Variables:
+          DB_HOST:
+            Ref: DBHostParam
+          DB_USER:
+            Ref: DBUserParam
+          DB_PASS:
+            Ref: DBPassParam
+          DB_NAME:
+            Ref: DBNameParam
+      Events:
+        OrderItemApi:
+          Type: Api
+          Properties:
+            Path: /api/orders/{oid}
+            Method: ANY
+      CodeUri: OrderItemFunction
+    Metadata:
+      SamResourceId: OrderItemFunction
+  UsageFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: api/usage.handler
+      Runtime: python3.9
+      Environment:
+        Variables:
+          DB_HOST:
+            Ref: DBHostParam
+          DB_USER:
+            Ref: DBUserParam
+          DB_PASS:
+            Ref: DBPassParam
+          DB_NAME:
+            Ref: DBNameParam
+      Events:
+        UsageApi:
+          Type: Api
+          Properties:
+            Path: /api/usage
+            Method: GET
+      CodeUri: UsageFunction
+    Metadata:
+      SamResourceId: UsageFunction
+  ReportsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: api/reports.handler
+      Runtime: python3.9
+      Environment:
+        Variables:
+          DB_HOST:
+            Ref: DBHostParam
+          DB_USER:
+            Ref: DBUserParam
+          DB_PASS:
+            Ref: DBPassParam
+          DB_NAME:
+            Ref: DBNameParam
+      Events:
+        ReportsApi:
+          Type: Api
+          Properties:
+            Path: /api/reports
+            Method: GET
+      CodeUri: ReportsFunction
+    Metadata:
+      SamResourceId: ReportsFunction
 Outputs:
   FimaiApiUrl:
     Description: Invoke URL for FIMai endpoint
