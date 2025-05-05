@@ -5,18 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Inventory – Fabric Inventory Management</title>
   <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    crossorigin="anonymous"
+  >
 
   <!-- Prevent flash of protected content -->
   <style>body { visibility: hidden; }</style>
   <script>
     window.addEventListener('DOMContentLoaded', async () => {
       try {
-        const res = await fetch('/api/check_session',{ credentials:'include' });
+        const res = await fetch('/api/check_session', { credentials: 'include' });
         if (!res.ok) throw new Error();
         const { logged_in } = await res.json();
         if (!logged_in) throw new Error();
-        document.body.style.visibility='visible';
+        document.body.style.visibility = 'visible';
       } catch {
         window.location.replace('/login.html');
       }
@@ -26,21 +30,53 @@
   <!-- Custom Styles (same as dashboard) -->
   <style>
     *{margin:0;padding:0;font-family:sans-serif;}
-    body { min-height:100vh;
-      background: linear-gradient(rgba(0,0,0,0.75),rgba(0,0,0,0.75)),
-                  url('/images/fabric.jpg') center/cover no-repeat;
+    body {
+      min-height:100vh;
+      background: linear-gradient(
+        rgba(0,0,0,0.75),
+        rgba(0,0,0,0.75)
+      ),
+      url('/images/fabric.jpg') center/cover no-repeat;
       color:#fff;
     }
-    .navbar{width:85%;margin:auto;padding:20px 0;display:flex;align-items:center;justify-content:space-between;}
+    .navbar {
+      width:85%;
+      margin:auto;
+      padding:20px 0;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
     .navbar-nav{display:flex;}
-    .navbar-nav li{list-style:none;position:relative;margin:0 15px;}
-    .navbar-nav li a{color:#fff;text-transform:uppercase;font-weight:bold;transition:color .3s;}
-    .navbar-nav li::after{content:'';position:absolute;bottom:-5px;left:0;height:3px;width:0;background:#009688;transition:width .5s;}
-    .navbar-nav li:hover::after{width:100%;}
-    .navbar-nav li:hover a{color:#009688;}
-    table {background:rgba(255,255,255,0.1);color:#fff;}
-    th,td {vertical-align:middle;}
-    .btn-close {filter:invert(1);}
+    .navbar-nav li {
+      list-style:none;
+      position:relative;
+      margin:0 15px;
+    }
+    .navbar-nav li a {
+      color:#fff;
+      text-transform:uppercase;
+      font-weight:bold;
+      transition:color .3s;
+    }
+    .navbar-nav li::after {
+      content:'';
+      position:absolute;
+      bottom:-5px;
+      left:0;
+      height:3px;
+      width:0;
+      background:#009688;
+      transition:width .5s;
+    }
+    .navbar-nav li:hover::after { width:100%; }
+    .navbar-nav li:hover a { color:#009688; }
+    table {
+      background:rgba(255,255,255,0.1);
+      color:#fff;
+    }
+    th, td { vertical-align:middle; }
+    .btn-close { filter:invert(1); }
   </style>
 </head>
 <body>
@@ -60,8 +96,13 @@
     <table id="inventory-table" class="table table-hover table-dark">
       <thead>
         <tr>
-          <th>ID</th><th>Type</th><th>Color</th>
-          <th>Quantity</th><th>Price/unit</th><th>Restock Thresh</th><th>Actions</th>
+          <th>ID</th>
+          <th>Type</th>
+          <th>Color</th>
+          <th>Quantity</th>
+          <th>Price/unit</th>
+          <th>Restock Thresh</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -109,23 +150,29 @@
     </div>
   </div>
 
-  <!-- Bootstrap JS & main script -->
+  <!-- Bootstrap JS Bundle -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    crossorigin="anonymous"
+  ></script>
+
+  <!-- Main Inventory Script -->
   <script>
     // Auth calls stay on Vercel
     const AUTH_BASE = "/api";
     // All inventory data calls to your AWS API Gateway
     const AWS_BASE  = "https://cysmmzomhh.execute-api.us-east-1.amazonaws.com/Prod/api";
-  
+
     const itemModal = new bootstrap.Modal(document.getElementById('itemModal'));
     const form      = document.getElementById('itemForm');
     let isEdit      = false;
-  
+
     // Logout via Vercel
     document.getElementById('logoutButton').addEventListener('click', async () => {
       await fetch(`${AUTH_BASE}/logout`, { method: 'POST', credentials: 'include' });
       location.replace('/login.html');
     });
-  
+
     // Session‑check on page load
     window.addEventListener('DOMContentLoaded', async () => {
       try {
@@ -139,11 +186,11 @@
         window.location.replace('/login.html');
       }
     });
-  
+
     // Fetch & render inventory table
     async function loadInventory() {
       try {
-        const data = await fetch(`${AWS_BASE}/inventory`, { credentials:'include' })
+        const data = await fetch(`${AWS_BASE}/inventory`, { credentials: 'include' })
                             .then(r => r.json());
         const tbody = document.querySelector('#inventory-table tbody');
         tbody.innerHTML = '';
@@ -166,7 +213,7 @@
         console.error('Failed to load inventory:', err);
       }
     }
-  
+
     // Open “Add” modal
     document.getElementById('add-item-btn').addEventListener('click', () => {
       isEdit = false;
@@ -174,24 +221,24 @@
       form.reset();
       itemModal.show();
     });
-  
+
     // Handle Edit/Delete buttons
     document.querySelector('#inventory-table tbody').addEventListener('click', e => {
       const tr = e.target.closest('tr');
       const fid = tr.children[0].innerText;
-  
+
       if (e.target.classList.contains('edit-btn')) {
         isEdit = true;
         document.getElementById('modalTitle').innerText = 'Edit Item';
-        form.fabric_id.value        = fid;
-        form.fabric_type.value      = tr.children[1].innerText;
-        form.color.value            = tr.children[2].innerText;
-        form.quantity.value         = tr.children[3].innerText;
-        form.price_per_unit.value   = parseFloat(tr.children[4].innerText.slice(1));
-        form.restock_threshold.value= tr.children[5].innerText;
+        form.fabric_id.value         = fid;
+        form.fabric_type.value       = tr.children[1].innerText;
+        form.color.value             = tr.children[2].innerText;
+        form.quantity.value          = tr.children[3].innerText;
+        form.price_per_unit.value    = parseFloat(tr.children[4].innerText.slice(1));
+        form.restock_threshold.value = tr.children[5].innerText;
         itemModal.show();
       }
-  
+
       if (e.target.classList.contains('delete-btn')) {
         if (confirm(`Delete item ${fid}?`)) {
           fetch(`${AWS_BASE}/inventory/${fid}`, {
@@ -202,7 +249,7 @@
         }
       }
     });
-  
+
     // Save (add or update)
     document.getElementById('saveItemBtn').addEventListener('click', async () => {
       const payload = {
@@ -212,12 +259,12 @@
         price_per_unit:  +form.price_per_unit.value,
         restock_threshold:+form.restock_threshold.value
       };
-  
+
       const method = isEdit ? 'PUT' : 'POST';
       const url    = isEdit
         ? `${AWS_BASE}/inventory/${form.fabric_id.value}`
         : `${AWS_BASE}/inventory`;
-  
+
       try {
         await fetch(url, {
           method,

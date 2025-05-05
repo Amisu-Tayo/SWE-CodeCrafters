@@ -2,17 +2,28 @@ import json
 import logging
 from db_config import get_connection
 
-# Set up logging so we see errors in CloudWatch
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
+CORS_HEADERS = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "https://fims.store",
+    "Access-Control-Allow-Methods": "OPTIONS,GET,POST",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Credentials": "true"
+}
+
 def handler(event, context):
     logger.debug("Orders event: %s", event)
+    method = event.get("httpMethod")
+
+    if method == "OPTIONS":
+        return {"statusCode": 200, "headers": CORS_HEADERS, "body": ""}
+
     conn = None
     try:
         conn = get_connection()
         cur  = conn.cursor(dictionary=True)
-        method = event.get("httpMethod")
 
         if method == "GET":
             cur.execute("""
@@ -25,8 +36,12 @@ def handler(event, context):
                 FROM orders
             """)
             rows = cur.fetchall()
-            status_code = 200
-            body = rows
+            for r in rows:
+                od = r.get("order_date")
+                if hasattr(od, "isoformat"):
+                    r["order_date"] = od.isoformat()
+            body   = json.dumps(rows)
+            status = 200
 
         elif method == "POST":
             data = json.loads(event.get("body") or "{}")
@@ -35,28 +50,23 @@ def handler(event, context):
                 (data["supplier_id"], data["fabric_id"], data["quantity"])
             )
             conn.commit()
-            new_id = cur.lastrowid
-            status_code = 201
-            body = {"order_id": new_id}
+            body   = json.dumps({ "order_id": cur.lastrowid })
+            status = 201
 
         else:
             return {
                 "statusCode": 405,
-                "headers": { "Content-Type": "application/json" },
+                "headers": CORS_HEADERS,
                 "body": json.dumps({ "error": "Method not allowed" })
             }
 
-        return {
-            "statusCode": status_code,
-            "headers": { "Content-Type": "application/json" },
-            "body": json.dumps(body, default=str)
-        }
+        return {"statusCode": status, "headers": CORS_HEADERS, "body": body}
 
     except Exception as e:
         logger.exception("Orders handler failed")
         return {
             "statusCode": 500,
-            "headers": { "Content-Type": "application/json" },
+            "headers": CORS_HEADERS,
             "body": json.dumps({ "error": str(e) })
         }
 

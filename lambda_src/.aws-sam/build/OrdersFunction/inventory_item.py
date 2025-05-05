@@ -2,18 +2,29 @@ import json
 import logging
 from db_config import get_connection
 
-# Set up logging so we see errors in CloudWatch
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
+CORS_HEADERS = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "https://fims.store",
+    "Access-Control-Allow-Methods": "OPTIONS,GET,PUT,DELETE",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Credentials": "true"
+}
+
 def handler(event, context):
     logger.debug("InventoryItem event: %s", event)
+    method = event.get("httpMethod")
+
+    if method == "OPTIONS":
+        return {"statusCode": 200, "headers": CORS_HEADERS, "body": ""}
+
     conn = None
     try:
         conn = get_connection()
         cur = conn.cursor()
         fid = int(event["pathParameters"]["fid"])
-        method = event.get("httpMethod")
 
         if method == "PUT":
             data = json.loads(event.get("body") or "{}")
@@ -37,8 +48,8 @@ def handler(event, context):
                 )
             )
             conn.commit()
-            status_code = 200
-            body = {"ok": True}
+            status = 200
+            body   = { "ok": True }
 
         elif method == "DELETE":
             cur.execute(
@@ -46,27 +57,27 @@ def handler(event, context):
                 (fid,)
             )
             conn.commit()
-            status_code = 200
-            body = {"ok": True}
+            status = 200
+            body   = { "ok": True }
 
         else:
             return {
                 "statusCode": 405,
-                "headers": { "Content-Type": "application/json" },
+                "headers": CORS_HEADERS,
                 "body": json.dumps({ "error": "Method not allowed" })
             }
 
         return {
-            "statusCode": status_code,
-            "headers": { "Content-Type": "application/json" },
-            "body": json.dumps(body, default=str)
+            "statusCode": status,
+            "headers": CORS_HEADERS,
+            "body": json.dumps(body)
         }
 
     except Exception as e:
         logger.exception("InventoryItem handler failed")
         return {
             "statusCode": 500,
-            "headers": { "Content-Type": "application/json" },
+            "headers": CORS_HEADERS,
             "body": json.dumps({ "error": str(e) })
         }
 
