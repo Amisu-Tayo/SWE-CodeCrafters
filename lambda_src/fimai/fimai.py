@@ -161,4 +161,4 @@ def chat():
     return jsonify(response="Sorry, I didn’t understand that. Ask me how many yards you have of a fabric, or to forecast sales, or general stats like total items or low stock.")
 
 def handler(event, context):
-    return awsgi.response(app, event, context)
+    return awsgi.WSGIProxy(app) (event, context)

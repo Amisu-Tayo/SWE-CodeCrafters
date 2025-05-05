@@ -4,106 +4,108 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Reports – Fabric Inventory Management</title>
-
-  <!-- Bootstrap CSS & Chart.js -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- Session‑check snippet -->
-  <style>body { visibility: hidden; }</style>
+  <style>
+    * { margin: 0; padding: 0; font-family: sans-serif; }
+    body {
+      visibility: hidden;
+      background: 
+        linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)),
+        url('/images/fabric.jpg') center/cover no-repeat;
+      color: #fff;
+      min-height: 100vh;
+    }
+    .navbar { width: 85%; margin: auto; padding: 20px 0; }
+    #report-chart {
+      background: rgba(255,255,255,0.9);
+      border-radius: 8px;
+    }
+    table { background: rgba(255,255,255,0.1); }
+    th, td { color: #e0f2f1; }
+    .nav-link:hover { color: #009688 !important; }
+    .nav-link::after {
+      content: '';
+      display: block;
+      width: 0;
+      height: 3px;
+      background: #009688;
+      transition: width .3s;
+    }
+    .nav-link:hover::after { width: 100%; }
+  </style>
   <script>
     window.addEventListener('DOMContentLoaded', async () => {
       try {
-        const res = await fetch('/api/check_session', { credentials:'include' });
+        const res = await fetch('/api/check_session', { credentials: 'include' });
         if (!res.ok) throw 0;
         const { logged_in } = await res.json();
         if (!logged_in) throw 0;
-        document.body.style.visibility = 'visible';
-      } catch {
-        window.location.replace('/login.html');
-      }
-    });
-  </script>
-
-  <!-- Custom Styles -->
-  <style>
-    * { margin:0; padding:0; font-family:sans-serif; }
-    body {
-      background: linear-gradient(rgba(0,0,0,0.75),rgba(0,0,0,0.75)),url('/images/fabric.jpg') center/cover;
-      color:#fff; min-height:100vh;
-    }
-    .navbar { width:85%; margin:auto; padding:20px 0; display:flex; align-items:center; justify-content:space-between; }
-    .navbar-nav { display:flex; }
-    .navbar-nav li { margin:0 15px; list-style:none; position:relative; }
-    .navbar-nav li a { color:#fff; text-decoration:none; text-transform:uppercase; font-weight:bold; transition:color .3s; }
-    .navbar-nav li::after { content:''; position:absolute; bottom:-5px; left:0; height:3px; width:0; background:#009688; transition:width .5s; }
-    .navbar-nav li:hover::after { width:100%; }
-    .navbar-nav li:hover a { color:#009688; }
-    #report-chart { background:rgba(255,255,255,0.9); border-radius:8px; }
-    table { background: rgba(255,255,255,0.1); }
-    th, td { color:#e0f2f1; }
-  </style>
-</head>
-<body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg">
-    <div class="container-fluid">
-      <a class="navbar-brand text-white" href="#">FIMS Reports</a>
-      <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav2"><span class="navbar-toggler-icon"></span></button>
-      <div class="collapse navbar-collapse" id="nav2">
-        <ul class="navbar-nav ms-auto">
-          <li><a class="nav-link" href="/dashboard.html">Dashboard</a></li>
-          <li><a class="nav-link" href="/inventory.html">Inventory</a></li>
-          <li><a class="nav-link" href="/orders.html">Orders</a></li>
-          <li><button id="logoutButton" class="btn login-button"><span></span>Logout</button></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-
-  <div class="container my-5">
-    <h1 class="text-white mb-4">Sales Reports</h1>
-
-    <!-- Report selector & chart -->
-    <div class="mb-4 text-white">
-      <label for="report-select">Select Report:</label>
-      <select id="report-select" class="form-select w-auto d-inline-block ms-2"></select>
-    </div>
-    <canvas id="report-chart" width="600" height="300"></canvas>
-
-    <!-- Reports table -->
-    <h2 class="text-white mt-5">All Reports</h2>
-    <table id="reports-table" class="table table-striped table-dark">
-      <thead>
-        <tr>
-          <th>ID</th><th>Generated By</th><th>Date</th><th>Data (raw JSON)</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-
-  <!-- Bootstrap JS & Chart Drawing Logic -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-  <script>
-    const AUTH_BASE = "/api";
-    const AWS_BASE  = "https://cysmmzomhh.execute-api.us-east-1.amazonaws.com/Prod/api";
-
-    window.addEventListener('DOMContentLoaded', async () => {
-      try {
-        const res = await fetch(`${AUTH_BASE}/check_session`, { credentials: 'include' });
-        if (!res.ok) throw new Error();
-        const { logged_in } = await res.json();
-        if (!logged_in) throw new Error();
         document.body.style.visibility = 'visible';
         await loadReports();
       } catch {
         window.location.replace('/login.html');
       }
     });
+  </script>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">FIMS Reports</a>
+      <button class="navbar-toggler" type="button"
+              data-bs-toggle="collapse" data-bs-target="#nav2"
+              aria-controls="nav2" aria-expanded="false"
+              aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="nav2">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="/dashboard.html">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="/inventory.html">Inventory</a></li>
+          <li class="nav-item"><a class="nav-link" href="/orders.html">Orders</a></li>
+          <li class="nav-item">
+            <button id="logoutButton" class="btn btn-outline-light ms-3">Logout</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container my-5">
+    <h1 class="mb-4">Sales Reports</h1>
+
+    <div class="mb-4">
+      <label for="report-select" class="form-label">Select Report:</label>
+      <select id="report-select" class="form-select w-auto d-inline-block ms-2"></select>
+    </div>
+
+    <canvas id="report-chart" width="600" height="300"></canvas>
+
+    <h2 class="mt-5">All Reports</h2>
+    <table id="reports-table" class="table table-striped table-dark">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Generated By</th>
+          <th>Date</th>
+          <th>Data (raw JSON)</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script>
+    const AUTH_BASE = '/api';
+    const AWS_BASE  = 'https://cysmmzomhh.execute-api.us-east-1.amazonaws.com/Prod/api';
 
     document.getElementById('logoutButton').addEventListener('click', async () => {
-      await fetch(`${AUTH_BASE}/logout`, { method: 'POST', credentials: 'include' });
+      await fetch(`${AUTH_BASE}/logout`, {
+        method: 'POST',
+        credentials: 'include'
+      });
       location.replace('/login.html');
     });
 
@@ -111,74 +113,66 @@
 
     async function loadReports() {
       try {
-        const res = await fetch(`${AWS_BASE}/reports`, { credentials: 'include' });
+        const res = await fetch(`${AWS_BASE}/reports`, {
+          credentials: 'include'
+        });
         if (!res.ok) throw new Error(`Status ${res.status}`);
         reports = await res.json();
 
+        // populate dropdown
         const sel = document.getElementById('report-select');
-        sel.innerHTML = '';
-        reports.forEach(r => {
-          const opt = document.createElement('option');
-          opt.value = r.report_id;
-          opt.text  = `${new Date(r.report_date).toLocaleDateString()} (Report #${r.report_id})`;
-          sel.appendChild(opt);
-        });
+        sel.innerHTML = reports
+          .map(r => `<option value="${r.report_id}">
+                        ${new Date(r.report_date).toLocaleDateString()}
+                        (Report #${r.report_id})
+                      </option>`)
+          .join('');
 
+        // populate table
         const tbody = document.querySelector('#reports-table tbody');
-        tbody.innerHTML = '';
-        reports.forEach(r => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${r.report_id}</td>
-            <td>${r.generated_by}</td>
-            <td>${new Date(r.report_date).toLocaleString()}</td>
-            <td><code>${r.report_data}</code></td>
-          `;
-          tbody.appendChild(tr);
-        });
+        tbody.innerHTML = reports
+          .map(r => `
+            <tr>
+              <td>${r.report_id}</td>
+              <td>${r.generated_by}</td>
+              <td>${new Date(r.report_date).toLocaleString()}</td>
+              <td>
+                <pre class="mb-0"><code>
+${JSON.stringify(JSON.parse(r.report_data), null, 2)}
+                </code></pre>
+              </td>
+            </tr>`)
+          .join('');
 
-        drawChart(reports[0].report_data);
+        // draw first chart if data exists
+        if (reports.length) {
+          drawChart(reports[0].report_data);
+        }
 
         sel.onchange = () => {
-          const selId = parseInt(sel.value, 10);
-          const rep   = reports.find(x => x.report_id === selId);
-          drawChart(rep.report_data);
+          const r = reports.find(x => x.report_id === +sel.value);
+          if (r) drawChart(r.report_data);
         };
       } catch (err) {
         console.error('Failed to load reports:', err);
       }
     }
 
-    function drawChart(raw) {
-      let dataObj;
-      // if it's a string, parse, else assume already object
-      if (typeof raw === 'string') {
-        dataObj = JSON.parse(raw);
-      } else {
-        dataObj = raw;
-      }
-
-      const labels = Object.keys(dataObj)
-        .map(s => s.charAt(0).toUpperCase() + s.slice(1));
-      const values = Object.values(dataObj);
+    function drawChart(jsonStr) {
+      const dataObj = JSON.parse(jsonStr);
+      const labels = Array.isArray(dataObj.sales)
+        ? dataObj.sales.map(i => i.fabric)
+        : Object.keys(dataObj).map(k => k[0].toUpperCase() + k.slice(1));
+      const values = Array.isArray(dataObj.sales)
+        ? dataObj.sales.map(i => i.qty)
+        : Object.values(dataObj);
 
       const ctx = document.getElementById('report-chart').getContext('2d');
       if (reportChart) reportChart.destroy();
       reportChart = new Chart(ctx, {
         type: 'bar',
-        data: {
-          labels,
-          datasets: [{
-            label: 'Yards Sold',
-            data: values,
-            backgroundColor: 'rgba(0,150,136,0.6)',
-            borderColor: 'rgba(0,150,136,1)',
-            borderWidth: 1
-          }]
-        },
-        options: {
-          scales: { y: { beginAtZero: true } }
-        }
+        data: { labels, datasets: [{ label: 'Yards Sold', data: values }] },
+        options: { scales: { y: { beginAtZero: true } } }
       });
     }
   </script>
