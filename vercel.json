@@ -4,6 +4,8 @@
       { "src": "api/*.py", "use": "@vercel/python" }
     ],
     "routes": [
+      { "handle": "filesystem" },
+  
       {
         "src": "/api/(inventory|orders|usage|reports)(?:/.*)?$",
         "dest": "api/index.py"
@@ -11,10 +13,6 @@
       {
         "src": "/api/(.*)",
         "dest": "api/$1.py"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "public/$1"
       }
     ]
   }
