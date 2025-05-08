@@ -87,4 +87,6 @@ python run.py
 or visit the website at https://fims.store
 
 5. link to video demo:
+https://drive.google.com/file/d/1TZxM5vs0A3uKS2NJhl5_JYpyaQ73rtf6/view?usp=sharing
+
 
