@@ -15,5 +15,8 @@ COPY fimai.py .
 COPY db_config.py .
 COPY models ./models
 
+# grant read access to everyone on the models
+RUN chmod -R a+r models
+
 # 5) Specify the correct handler path
 CMD ["fimai.handler"]

@@ -1,4 +1,6 @@
 Flask==3.1.0
+flask-cors
+asgiref
 mangum
 prophet
 pandas
@@ -7,3 +9,4 @@ python-dotenv==1.1.0
 scikit-learn
 matplotlib
 awsgi
+plotly

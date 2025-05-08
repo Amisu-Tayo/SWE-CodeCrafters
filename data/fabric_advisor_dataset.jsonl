@@ -1,0 +1,100 @@
+{"input": "Fabric: linen\nQuantity: 26\nThreshold: 13\nForecast: 51\nTrend: 1.15", "output": "Monitor linen levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: linen\nQuantity: 20\nThreshold: 27\nForecast: 14\nTrend: 0.97", "output": "Monitor linen levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: linen\nQuantity: 30\nThreshold: 28\nForecast: 46\nTrend: 1.05", "output": "Monitor linen levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: cotton\nQuantity: 11\nThreshold: 21\nForecast: 52\nTrend: 1.03", "output": "Cotton demand is rising. Your stock is below threshold \u2014 restock recommended."}
+{"input": "Fabric: linen\nQuantity: 47\nThreshold: 11\nForecast: 43\nTrend: 1.2", "output": "Linen inventory is healthy. No immediate restock needed."}
+{"input": "Fabric: polyester\nQuantity: 45\nThreshold: 14\nForecast: 43\nTrend: 0.86", "output": "Polyester inventory is healthy. No immediate restock needed."}
+{"input": "Fabric: denim\nQuantity: 7\nThreshold: 22\nForecast: 27\nTrend: 0.79", "output": "Monitor denim levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: chiffon\nQuantity: 7\nThreshold: 12\nForecast: 30\nTrend: 1.27", "output": "Chiffon demand is rising. Your stock is below threshold \u2014 restock recommended."}
+{"input": "Fabric: linen\nQuantity: 3\nThreshold: 12\nForecast: 41\nTrend: 1.05", "output": "Linen demand is rising. Your stock is below threshold \u2014 restock recommended."}
+{"input": "Fabric: denim\nQuantity: 48\nThreshold: 21\nForecast: 51\nTrend: 1.35", "output": "Monitor denim levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: chiffon\nQuantity: 0\nThreshold: 11\nForecast: 31\nTrend: 0.72", "output": "Monitor chiffon levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: denim\nQuantity: 9\nThreshold: 28\nForecast: 49\nTrend: 1.24", "output": "Denim demand is rising. Your stock is below threshold \u2014 restock recommended."}
+{"input": "Fabric: polyester\nQuantity: 45\nThreshold: 15\nForecast: 36\nTrend: 1.16", "output": "Polyester inventory is healthy. No immediate restock needed."}
+{"input": "Fabric: polyester\nQuantity: 45\nThreshold: 22\nForecast: 29\nTrend: 1.27", "output": "You have more polyester than forecasted need. Consider pausing restock."}
+{"input": "Fabric: silk\nQuantity: 23\nThreshold: 11\nForecast: 43\nTrend: 0.92", "output": "Monitor silk levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: silk\nQuantity: 19\nThreshold: 27\nForecast: 36\nTrend: 0.8", "output": "Monitor silk levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: cotton\nQuantity: 9\nThreshold: 26\nForecast: 23\nTrend: 1.45", "output": "Cotton demand is rising. Your stock is below threshold \u2014 restock recommended."}
+{"input": "Fabric: polyester\nQuantity: 2\nThreshold: 27\nForecast: 29\nTrend: 0.83", "output": "Monitor polyester levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: cotton\nQuantity: 22\nThreshold: 26\nForecast: 23\nTrend: 0.91", "output": "Monitor cotton levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: chiffon\nQuantity: 45\nThreshold: 11\nForecast: 16\nTrend: 0.81", "output": "You have more chiffon than forecasted need. Consider pausing restock."}
+{"input": "Fabric: chiffon\nQuantity: 28\nThreshold: 19\nForecast: 30\nTrend: 1.27", "output": "Monitor chiffon levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: polyester\nQuantity: 35\nThreshold: 21\nForecast: 44\nTrend: 1.33", "output": "Monitor polyester levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: cotton\nQuantity: 11\nThreshold: 19\nForecast: 55\nTrend: 1.26", "output": "Cotton demand is rising. Your stock is below threshold \u2014 restock recommended."}
+{"input": "Fabric: linen\nQuantity: 18\nThreshold: 15\nForecast: 16\nTrend: 1.26", "output": "Linen inventory is healthy. No immediate restock needed."}
+{"input": "Fabric: linen\nQuantity: 8\nThreshold: 22\nForecast: 51\nTrend: 0.97", "output": "Monitor linen levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: polyester\nQuantity: 35\nThreshold: 27\nForecast: 45\nTrend: 0.77", "output": "Monitor polyester levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: chiffon\nQuantity: 33\nThreshold: 30\nForecast: 20\nTrend: 1.13", "output": "You have more chiffon than forecasted need. Consider pausing restock."}
+{"input": "Fabric: denim\nQuantity: 16\nThreshold: 25\nForecast: 43\nTrend: 0.72", "output": "Monitor denim levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: linen\nQuantity: 36\nThreshold: 16\nForecast: 46\nTrend: 1.35", "output": "Monitor linen levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: polyester\nQuantity: 13\nThreshold: 20\nForecast: 37\nTrend: 1.17", "output": "Polyester demand is rising. Your stock is below threshold \u2014 restock recommended."}
+{"input": "Fabric: denim\nQuantity: 21\nThreshold: 13\nForecast: 24\nTrend: 0.88", "output": "Monitor denim levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: silk\nQuantity: 14\nThreshold: 22\nForecast: 13\nTrend: 1.45", "output": "Monitor silk levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: cotton\nQuantity: 4\nThreshold: 11\nForecast: 31\nTrend: 0.73", "output": "Monitor cotton levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: cotton\nQuantity: 49\nThreshold: 27\nForecast: 19\nTrend: 1.03", "output": "You have more cotton than forecasted need. Consider pausing restock."}
+{"input": "Fabric: chiffon\nQuantity: 27\nThreshold: 29\nForecast: 34\nTrend: 0.75", "output": "Monitor chiffon levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: linen\nQuantity: 16\nThreshold: 14\nForecast: 21\nTrend: 1.19", "output": "Monitor linen levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: polyester\nQuantity: 15\nThreshold: 16\nForecast: 59\nTrend: 0.73", "output": "Monitor polyester levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: polyester\nQuantity: 47\nThreshold: 12\nForecast: 21\nTrend: 0.97", "output": "You have more polyester than forecasted need. Consider pausing restock."}
+{"input": "Fabric: cotton\nQuantity: 11\nThreshold: 16\nForecast: 40\nTrend: 1.11", "output": "Cotton demand is rising. Your stock is below threshold \u2014 restock recommended."}
+{"input": "Fabric: denim\nQuantity: 25\nThreshold: 27\nForecast: 37\nTrend: 1.26", "output": "Denim demand is rising. Your stock is below threshold \u2014 restock recommended."}
+{"input": "Fabric: chiffon\nQuantity: 14\nThreshold: 28\nForecast: 18\nTrend: 1.23", "output": "Chiffon demand is rising. Your stock is below threshold \u2014 restock recommended."}
+{"input": "Fabric: chiffon\nQuantity: 46\nThreshold: 19\nForecast: 15\nTrend: 1.11", "output": "You have more chiffon than forecasted need. Consider pausing restock."}
+{"input": "Fabric: linen\nQuantity: 35\nThreshold: 24\nForecast: 37\nTrend: 1.07", "output": "Monitor linen levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: denim\nQuantity: 16\nThreshold: 28\nForecast: 15\nTrend: 1.28", "output": "Monitor denim levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: denim\nQuantity: 10\nThreshold: 20\nForecast: 23\nTrend: 0.91", "output": "Monitor denim levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: linen\nQuantity: 41\nThreshold: 11\nForecast: 12\nTrend: 1.29", "output": "You have more linen than forecasted need. Consider pausing restock."}
+{"input": "Fabric: chiffon\nQuantity: 28\nThreshold: 15\nForecast: 37\nTrend: 0.75", "output": "Monitor chiffon levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: polyester\nQuantity: 12\nThreshold: 10\nForecast: 23\nTrend: 1.21", "output": "Monitor polyester levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: linen\nQuantity: 49\nThreshold: 16\nForecast: 17\nTrend: 1.06", "output": "You have more linen than forecasted need. Consider pausing restock."}
+{"input": "Fabric: polyester\nQuantity: 13\nThreshold: 11\nForecast: 28\nTrend: 1.25", "output": "Monitor polyester levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: cotton\nQuantity: 7\nThreshold: 12\nForecast: 43\nTrend: 0.98", "output": "Monitor cotton levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: silk\nQuantity: 5\nThreshold: 24\nForecast: 22\nTrend: 1.27", "output": "Silk demand is rising. Your stock is below threshold \u2014 restock recommended."}
+{"input": "Fabric: linen\nQuantity: 1\nThreshold: 22\nForecast: 14\nTrend: 0.72", "output": "Monitor linen levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: chiffon\nQuantity: 49\nThreshold: 26\nForecast: 13\nTrend: 1.2", "output": "You have more chiffon than forecasted need. Consider pausing restock."}
+{"input": "Fabric: silk\nQuantity: 19\nThreshold: 15\nForecast: 58\nTrend: 0.98", "output": "Monitor silk levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: linen\nQuantity: 19\nThreshold: 24\nForecast: 55\nTrend: 1.46", "output": "Linen demand is rising. Your stock is below threshold \u2014 restock recommended."}
+{"input": "Fabric: linen\nQuantity: 27\nThreshold: 24\nForecast: 20\nTrend: 0.7", "output": "Linen inventory is healthy. No immediate restock needed."}
+{"input": "Fabric: linen\nQuantity: 31\nThreshold: 16\nForecast: 45\nTrend: 0.88", "output": "Monitor linen levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: silk\nQuantity: 5\nThreshold: 23\nForecast: 12\nTrend: 1.39", "output": "Silk demand is rising. Your stock is below threshold \u2014 restock recommended."}
+{"input": "Fabric: denim\nQuantity: 1\nThreshold: 18\nForecast: 46\nTrend: 1.04", "output": "Denim demand is rising. Your stock is below threshold \u2014 restock recommended."}
+{"input": "Fabric: polyester\nQuantity: 14\nThreshold: 12\nForecast: 41\nTrend: 0.75", "output": "Monitor polyester levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: denim\nQuantity: 37\nThreshold: 30\nForecast: 42\nTrend: 1.2", "output": "Monitor denim levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: denim\nQuantity: 39\nThreshold: 15\nForecast: 53\nTrend: 1.48", "output": "Monitor denim levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: denim\nQuantity: 47\nThreshold: 16\nForecast: 36\nTrend: 0.81", "output": "Denim inventory is healthy. No immediate restock needed."}
+{"input": "Fabric: cotton\nQuantity: 47\nThreshold: 30\nForecast: 20\nTrend: 0.83", "output": "You have more cotton than forecasted need. Consider pausing restock."}
+{"input": "Fabric: cotton\nQuantity: 41\nThreshold: 18\nForecast: 17\nTrend: 0.96", "output": "You have more cotton than forecasted need. Consider pausing restock."}
+{"input": "Fabric: chiffon\nQuantity: 36\nThreshold: 14\nForecast: 21\nTrend: 0.81", "output": "You have more chiffon than forecasted need. Consider pausing restock."}
+{"input": "Fabric: chiffon\nQuantity: 32\nThreshold: 15\nForecast: 25\nTrend: 1.19", "output": "Chiffon inventory is healthy. No immediate restock needed."}
+{"input": "Fabric: chiffon\nQuantity: 4\nThreshold: 20\nForecast: 16\nTrend: 0.79", "output": "Monitor chiffon levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: polyester\nQuantity: 26\nThreshold: 19\nForecast: 28\nTrend: 1.04", "output": "Monitor polyester levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: polyester\nQuantity: 0\nThreshold: 21\nForecast: 24\nTrend: 1.3", "output": "Polyester demand is rising. Your stock is below threshold \u2014 restock recommended."}
+{"input": "Fabric: linen\nQuantity: 2\nThreshold: 29\nForecast: 20\nTrend: 1.42", "output": "Linen demand is rising. Your stock is below threshold \u2014 restock recommended."}
+{"input": "Fabric: linen\nQuantity: 35\nThreshold: 23\nForecast: 11\nTrend: 1.24", "output": "You have more linen than forecasted need. Consider pausing restock."}
+{"input": "Fabric: chiffon\nQuantity: 24\nThreshold: 21\nForecast: 47\nTrend: 1.38", "output": "Monitor chiffon levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: chiffon\nQuantity: 0\nThreshold: 29\nForecast: 56\nTrend: 0.96", "output": "Monitor chiffon levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: chiffon\nQuantity: 18\nThreshold: 10\nForecast: 28\nTrend: 1.35", "output": "Monitor chiffon levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: silk\nQuantity: 35\nThreshold: 13\nForecast: 33\nTrend: 1.24", "output": "Silk inventory is healthy. No immediate restock needed."}
+{"input": "Fabric: silk\nQuantity: 4\nThreshold: 12\nForecast: 53\nTrend: 1.35", "output": "Silk demand is rising. Your stock is below threshold \u2014 restock recommended."}
+{"input": "Fabric: linen\nQuantity: 13\nThreshold: 16\nForecast: 18\nTrend: 1.26", "output": "Linen demand is rising. Your stock is below threshold \u2014 restock recommended."}
+{"input": "Fabric: polyester\nQuantity: 41\nThreshold: 19\nForecast: 52\nTrend: 0.95", "output": "Monitor polyester levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: linen\nQuantity: 24\nThreshold: 11\nForecast: 40\nTrend: 1.49", "output": "Monitor linen levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: denim\nQuantity: 35\nThreshold: 21\nForecast: 28\nTrend: 1.34", "output": "Denim inventory is healthy. No immediate restock needed."}
+{"input": "Fabric: silk\nQuantity: 48\nThreshold: 12\nForecast: 26\nTrend: 0.86", "output": "You have more silk than forecasted need. Consider pausing restock."}
+{"input": "Fabric: polyester\nQuantity: 5\nThreshold: 18\nForecast: 28\nTrend: 0.74", "output": "Monitor polyester levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: linen\nQuantity: 10\nThreshold: 13\nForecast: 40\nTrend: 1.48", "output": "Linen demand is rising. Your stock is below threshold \u2014 restock recommended."}
+{"input": "Fabric: chiffon\nQuantity: 29\nThreshold: 11\nForecast: 21\nTrend: 1.45", "output": "Chiffon inventory is healthy. No immediate restock needed."}
+{"input": "Fabric: polyester\nQuantity: 35\nThreshold: 11\nForecast: 17\nTrend: 1.23", "output": "You have more polyester than forecasted need. Consider pausing restock."}
+{"input": "Fabric: chiffon\nQuantity: 46\nThreshold: 13\nForecast: 54\nTrend: 0.86", "output": "Monitor chiffon levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: linen\nQuantity: 2\nThreshold: 15\nForecast: 10\nTrend: 1.11", "output": "Linen demand is rising. Your stock is below threshold \u2014 restock recommended."}
+{"input": "Fabric: chiffon\nQuantity: 47\nThreshold: 16\nForecast: 43\nTrend: 1.31", "output": "Chiffon inventory is healthy. No immediate restock needed."}
+{"input": "Fabric: linen\nQuantity: 46\nThreshold: 25\nForecast: 13\nTrend: 0.92", "output": "You have more linen than forecasted need. Consider pausing restock."}
+{"input": "Fabric: denim\nQuantity: 48\nThreshold: 17\nForecast: 35\nTrend: 1.22", "output": "Denim inventory is healthy. No immediate restock needed."}
+{"input": "Fabric: polyester\nQuantity: 44\nThreshold: 21\nForecast: 42\nTrend: 0.73", "output": "Polyester inventory is healthy. No immediate restock needed."}
+{"input": "Fabric: chiffon\nQuantity: 0\nThreshold: 29\nForecast: 43\nTrend: 1.47", "output": "Chiffon demand is rising. Your stock is below threshold \u2014 restock recommended."}
+{"input": "Fabric: linen\nQuantity: 40\nThreshold: 24\nForecast: 16\nTrend: 0.93", "output": "You have more linen than forecasted need. Consider pausing restock."}
+{"input": "Fabric: linen\nQuantity: 35\nThreshold: 19\nForecast: 15\nTrend: 1.15", "output": "You have more linen than forecasted need. Consider pausing restock."}
+{"input": "Fabric: polyester\nQuantity: 34\nThreshold: 10\nForecast: 34\nTrend: 0.74", "output": "Polyester inventory is healthy. No immediate restock needed."}
+{"input": "Fabric: chiffon\nQuantity: 13\nThreshold: 21\nForecast: 13\nTrend: 1.2", "output": "Monitor chiffon levels closely \u2014 current stock might not cover upcoming demand."}
+{"input": "Fabric: cotton\nQuantity: 49\nThreshold: 26\nForecast: 11\nTrend: 1.01", "output": "You have more cotton than forecasted need. Consider pausing restock."}
+{"input": "Fabric: polyester\nQuantity: 20\nThreshold: 23\nForecast: 20\nTrend: 1.37", "output": "Monitor polyester levels closely \u2014 current stock might not cover upcoming demand."}

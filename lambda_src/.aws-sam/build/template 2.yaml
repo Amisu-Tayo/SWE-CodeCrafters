@@ -205,41 +205,13 @@ Resources:
           DB_NAME:
             Ref: DBNameParam
       Events:
-        InventoryReportApi:
+        ReportsApi:
           Type: Api
           Properties:
             RestApiId:
               Ref: MainApi
-            Path: /api/reports/inventory
-            Method: GET
-        SalesReportApi:
-          Type: Api
-          Properties:
-            RestApiId:
-              Ref: MainApi
-            Path: /api/reports/sales
-            Method: GET
-        PendingOrdersReportApi:
-          Type: Api
-          Properties:
-            RestApiId:
-              Ref: MainApi
-            Path: /api/reports/pending-orders
-            Method: GET
-        UsageTrendReportApi:
-          Type: Api
-          Properties:
-            RestApiId:
-              Ref: MainApi
-            Path: /api/reports/usage-trend
-            Method: GET
-        RestockAlertsReportApi:
-          Type: Api
-          Properties:
-            RestApiId:
-              Ref: MainApi
-            Path: /api/reports/restock-alerts
-            Method: GET
+            Path: /api/reports
+            Method: ANY
     Metadata:
       SamResourceId: ReportsFunction
 Outputs:
